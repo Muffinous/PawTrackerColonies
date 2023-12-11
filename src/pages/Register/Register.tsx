@@ -6,8 +6,6 @@ import pawLogo from '../../assets/pawlogo.png'; // Import the cat image
 import { useHistory } from 'react-router-dom';
 //import firebase from 'firebase/app';
 //import 'firebase/auth';
-import ColonySelectionPopup from '../../components/ColoniesPopUp/ColoniesPopup'; // Import the new ColonySelectionPopup component
-import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 
 const Register: React.FC = () => {
   const history = useHistory();
@@ -26,18 +24,18 @@ const Register: React.FC = () => {
       setLoading(true);
 
       // Validate that the password and confirm password match
-      if (password !== confirmPassword) {
-        console.error("Passwords don't match");
-        return;
-      }
+      //if (password !== confirmPassword) {
+      //  console.error("Passwords don't match");
+      //  return;
+      //}
 
       // Create a new user in Firebase Authentication
       // await firebase.auth().createUserWithEmailAndPassword(email, password);
 
       // Show the popup after successful registration
-      setShowPopup(true);
+      history.push('/home');
     } catch (error) {
-      // console.error('Registration error:', error.message);
+      console.error('Registration error:', error);
     } finally {
       setLoading(false);
     }
@@ -45,7 +43,6 @@ const Register: React.FC = () => {
 
   const handlePopupClose = () => {
     setShowPopup(false);
-    // Redirect to the home page or any other page after the popup is closed
     console.log('navigated to home page');
   };
 
@@ -77,7 +74,6 @@ const Register: React.FC = () => {
             <IonRouterLink onClick={redirectToLogin}>Login here</IonRouterLink>.
           </p>
           <IonLoading isOpen={loading} message={'Registering...'} />
-          <ColoniesPopup isOpen={showPopup} onClose={handlePopupClose} />
         </div>
       </IonContent>
     </IonPage>

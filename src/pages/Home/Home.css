@@ -1,0 +1,18 @@
+/* Add this to your CSS file */
+.custom-title {
+  font-size: 1.5em; /* Custom font size */
+  margin-left: 10px;
+  text-align-last: center;
+}
+
+.logo {
+  width: 150px;
+}
+
+.select-colonies-btn {
+  width: 50%;
+  --ion-border-radius: 15px; /* Set the desired border radius */
+}
+.button-container {
+  text-align: -webkit-center;
+}
