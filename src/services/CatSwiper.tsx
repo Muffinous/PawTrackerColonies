@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { useSpring, animated } from "react-spring";
-import { useDrag } from "react-use-gesture";
-import "./CatSwiper.css";
+// CatSwiper.tsx
+import React, { useEffect, useState } from 'react';
+import './CatSwiper.css'; // You can customize styles in this file
 
 interface Cat {
   id: number;
@@ -11,90 +10,94 @@ interface Cat {
 
 interface CatSwiperProps {
   cats: Cat[];
-  onSwipe: (currentIndex: number, isRight: boolean) => void;
-  onEnd: () => void; // Callback for reaching the end
 }
 
-const CatSwiper: React.FC<CatSwiperProps> = ({ cats, onSwipe, onEnd }) => {
+const CatSwiper: React.FC<CatSwiperProps> = ({ cats }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isEnd, setIsEnd] = useState(false);
+  const [missingAnimals, setMissingAnimals] = useState<Cat[]>([]);
+  const [fedAnimals, setFedAnimals] = useState<Cat[]>([]);
+  const [showSummary, setShowSummary] = useState(false);
 
-  const [style, set] = useSpring(() => ({
-    x: 0,
-    opacity: 1,
-  }));
+  const handleNext = () => {
 
-  const handleSwipe = (currentIndex: number, isRight: boolean) => {
-    onSwipe(currentIndex, isRight);
-    const nextIndex = isRight ? currentIndex + 1 : currentIndex - 1;
-
-    set({
-      x: isRight ? window.innerWidth : -window.innerWidth,
-      opacity: 0,
-      onRest: () => {
-        if (nextIndex < cats.length && nextIndex >= 0) {
-          setCurrentIndex(nextIndex);
-          set({ x: 0, opacity: 1 });
-        } else {
-          // Reached the end of the cat list
-          onEnd();
-        }
-      },
-    });
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % cats.length);
   };
 
-  const bind = useDrag(
-    ({ down, movement: [mx], direction: [xDir], distance, cancel }) => {
-      if (isEnd) {
-        // End of the list, show summary
-        onEnd();
-        return;
-      }
+  const handlePrevious = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + cats.length) % cats.length);
+  };
 
-      if (down && distance > window.innerWidth / 4) {
-        const isRight = xDir > 0;
-        const nextIndex = isRight ? currentIndex + 1 : currentIndex - 1;
+  const handleFeed = () => {
+    setFedAnimals((prevFedAnimals) => [...prevFedAnimals, cats[currentIndex]]);
+    console.log(`Fed cat: ${cats[currentIndex].name}`);
+    handleNext();
+  };
 
-        set({
-          x: isRight ? window.innerWidth : -window.innerWidth,
-          opacity: 0,
-          onRest: () => {
-            setCurrentIndex(nextIndex);
-            set({ x: 0, opacity: 1 });
-            onSwipe(currentIndex, isRight);
+  const handleMissing = () => {
+    setMissingAnimals((prevMissingAnimals) => [...prevMissingAnimals, cats[currentIndex]]);
+    console.log(`Reported missing cat: ${cats[currentIndex].name}`);
+    handleNext();
+  };
 
-            // Check if it's the end of the list
-            if (nextIndex === cats.length - 1) {
-              setIsEnd(true);
-            }
-          },
-        });
-
-        cancel();
-      } else {
-        set({ x: down ? mx : 0, opacity: down ? 0.8 : 1 });
-      }
+  useEffect(() => {
+    // Check if the user has interacted with all animals
+    console.log("fedAnimals.length + missingAnimals.length ", fedAnimals.length + missingAnimals.length, "cats.length", cats.length)
+    if (fedAnimals.length + missingAnimals.length === cats.length) {
+      setShowSummary(true);
     }
-  );
+  }, [fedAnimals, missingAnimals, cats]);
 
   return (
-    <animated.div
-      className="cat-swiper"
-      {...bind()}
-      style={{
-        ...style,
-        backgroundImage: `url(${cats[currentIndex].image})`,
-        backgroundSize: "cover",
-      }}
-    >
-      <div className="cat-info">
-        <h2>{cats[currentIndex].name}</h2>
-      </div>
-      <div className="swipe-actions">
-        <button onClick={() => handleSwipe(currentIndex, true)}>Feed</button>
-        <button onClick={() => handleSwipe(currentIndex, false)}>Missing</button>
-      </div>
-    </animated.div>
+    <div className="cat-swiper-container">
+      {showSummary ? (
+        <div className="summary">
+          <div className="summary-header">
+            <h2>Summary</h2>
+          </div>
+          <div className="summary-title">
+            <h3>- Buddies seen - </h3>
+          </div>
+          <div>
+            {fedAnimals.map((fedCat) => (
+              <li key={fedCat.id}>{fedCat.name}</li>
+            ))}
+          </div>
+          <div className="summary-title">
+            <h3>- Missing Buddies - </h3>
+          </div>
+          <div>
+            {missingAnimals.map((missingCat) => (
+              <h5 key={missingCat.id}>{missingCat.name}</h5>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="top-buttons">
+            <div className="top-left">
+              <button onClick={handlePrevious} disabled={currentIndex === 0}>
+                Previous
+              </button>
+            </div>
+            <div className="top-right">
+              <button onClick={handleNext} disabled={currentIndex === cats.length - 1}>
+                Next
+              </button>
+            </div>
+          </div>
+          <div className="cat-swiper">
+            <img src={cats[currentIndex].image} alt={cats[currentIndex].name} />
+            <div className="cat-info">
+              <h2>{cats[currentIndex].name}</h2>
+            </div>
+            <div className="swipe-actions">
+              <button onClick={() => handleFeed()}>Feed</button>
+              <button onClick={() => handleMissing()}>Missing</button>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 

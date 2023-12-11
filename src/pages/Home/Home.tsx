@@ -53,8 +53,8 @@ const Home: React.FC = () => {
           <IonTitle className="app-title">Your App Name</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent className="login-container">
-        <div className="login-form">
+      <IonContent className="home-container">
+        <div className="header">
           <img src={pawLogo} alt="Cat Logo" className="logo" />
           <h1>Home</h1>
         </div>
