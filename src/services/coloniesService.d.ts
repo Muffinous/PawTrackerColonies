@@ -1,5 +1,5 @@
-declare module '../../services/coloniesService' {
+declare module './coloniesService' {
     export function saveColoniesToServer(colonies: number[]): Promise<void>;
-    // Add any other exports if needed
+    export function saveColonyReport(report: any): Boolean;
   }
   

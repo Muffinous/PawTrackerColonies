@@ -23,3 +23,7 @@
 .button-container {
   text-align: -webkit-center;
 }
+
+.report-feeding-button {
+  margin: 15px 10px 0 10px;
+}

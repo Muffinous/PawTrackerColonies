@@ -4,7 +4,7 @@ import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCar
 import pawLogo from '../../assets/pawlogo.png';
 import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 // @ts-ignore
-import { getColoniesFromServer, saveColoniesToServer } from '../../services/coloniesService';
+import { getColoniesFromServer, saveColoniesToServer } from '@services/coloniesService';
 import Colony from '../../types/Colony';
 import { useHistory } from 'react-router-dom';
 
@@ -39,18 +39,18 @@ const Home: React.FC = () => {
     // Update the state to reflect the changes
     setUserColonies(selectedColonies);
   };
-  
+
   const handleColonySelection = (colony: Colony) => {
     console.log(`Selected Colonies: ${JSON.stringify(colony)}`);
     // Navigate to the ReportFeeding page with the colony ID as a parameter
     history.push(`/report-feeding/${colony.id}`);
-  };  
+  };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle className="app-title">Your App Name</IonTitle>
+          <IonTitle className="app-title">PawTracker (Colonies version)</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="home-container">
@@ -68,11 +68,13 @@ const Home: React.FC = () => {
                   <IonCardHeader>
                     <IonCardTitle>{colony.name}</IonCardTitle>
                   </IonCardHeader>
-                  <IonCardContent>
+                  <IonCardContent className="report-feeding-content text-center">
                     {/* You can add more details or customize the card content */}
                     <p>Description or additional information about the colony.</p>
                     <IonButton
+                      className='report-feeding-button'
                       expand="full"
+                      shape="round"
                       onClick={() => handleColonySelection(colony)}
                     >
                       Report Feeding

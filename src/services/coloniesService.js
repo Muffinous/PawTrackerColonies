@@ -74,3 +74,23 @@ export const saveColoniesUser = async (colonies) => {
         console.error('Error saving colonies:', error);
     }
 };
+
+// Function to save colonies to the server
+export const saveColonyReport = async (report) => {
+    try {
+        // Get existing reports from localStorage or initialize an empty array
+        const existingReports = JSON.parse(localStorage.getItem('colonyReports')) || [];
+    
+        // Add the new report to the array
+        existingReports.push(report);
+    
+        // Save the updated array back to localStorage
+        localStorage.setItem('colonyReports', JSON.stringify(existingReports));
+        console.log('Colony report saved successfully.');
+        return true;
+
+      } catch (error) {
+        console.error('Error saving colony report:', error.message);
+        return false;
+      }
+};

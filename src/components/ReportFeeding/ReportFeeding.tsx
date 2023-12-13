@@ -12,7 +12,7 @@ import {
 } from '@ionic/react';
 import { useParams, useHistory } from 'react-router-dom';
 import { close } from 'ionicons/icons';
-import CatSwiper from '../../services/CatSwiper'; // Adjust the import path based on your project structure
+import CatSwiper from '../CatSwiper/CatSwiper'; // Adjust the import path based on your project structure
 import './ReportFeeding.css';
 
 interface ReportFeedingProps {
@@ -59,7 +59,7 @@ const ReportFeeding: React.FC<ReportFeedingProps> = ({ isOpen, onClose }) => {
       </IonHeader>
       <IonContent className="report-container">
         <div className="report-form">
-          <CatSwiper cats={cats} onSwipe={handleSwipe} />
+          <CatSwiper cats={cats} onClose={handlePopupClose}/>
         </div>
       </IonContent>
     </IonModal>
