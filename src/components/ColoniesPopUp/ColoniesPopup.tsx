@@ -49,7 +49,7 @@ const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }
     onSave(selectedColonies);
     // Close the popup
     onClose();
-  };  
+  };
 
   const handleColonySelection = (colony: Colony) => {
     // Toggle selection
@@ -62,11 +62,8 @@ const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }
         return [...prevSelectedColonies, colony];
       }
     });
-  
-    // Handle other actions as needed
-    console.log(`Selected Colonies: ${JSON.stringify(selectedColonies)}`);
   };
-  
+
 
   return (
     <IonModal isOpen={isOpen} onDidDismiss={handlePopupClose}>
@@ -102,13 +99,14 @@ const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }
 
 
         <div className="button-container">
-            <IonButton
-                expand="full"
-                onClick={handleSave}
-                className="save-colonies-button"
-            >
-                Save colonies
-            </IonButton>
+          <IonButton
+            shape="round"
+            expand="full"
+            onClick={handleSave}
+            className="save-colonies-button"
+          >
+            Save colonies
+          </IonButton>
         </div>
       </IonContent>
     </IonModal>

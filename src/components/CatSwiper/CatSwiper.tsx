@@ -1,7 +1,7 @@
 // CatSwiper.tsx
 import React, { useEffect, useState } from 'react';
 import './CatSwiper.css'; // You can customize styles in this file
-import { IonIcon } from '@ionic/react';
+import { IonButton, IonIcon } from '@ionic/react';
 import { checkmarkDone, createOutline } from 'ionicons/icons';
 import { saveColonyReport } from '@services/coloniesService';
 
@@ -150,7 +150,7 @@ const CatSwiper: React.FC<CatSwiperProps> = ({ cats, onClose }) => {
               ))}
             </div>
             <div className="save-report-button" id="saveReportButton">
-              <button onClick={handleSaveReport}>Save Report</button>
+              <IonButton shape="round" onClick={handleSaveReport}>Save Report</IonButton>
             </div>
           </div>
         ) : (

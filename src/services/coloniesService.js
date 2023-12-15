@@ -3,13 +3,13 @@ export const saveColoniesToServer = async (colonies) => {
     try {
         // Make an HTTP POST request to your server API
         // Replace the URL with your actual API endpoint
-        await fetch('/api/saveColonies', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ colonies }),
-        });
+        // await fetch('/api/saveColonies', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({ colonies }),
+        // });
 
         localStorage.setItem('userColonies', JSON.stringify(colonies));
         console.log('Colonies saved to the server!', colonies);

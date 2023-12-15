@@ -17,11 +17,16 @@
 }
 
 .select-colonies-btn {
-  width: 50%;
   --ion-border-radius: 15px; /* Set the desired border radius */
 }
 .button-container {
   text-align: -webkit-center;
+  padding: 20px;
+}
+
+.text-center {
+  margin-left: 10px;
+  text-align-last: center;
 }
 
 .report-feeding-button {

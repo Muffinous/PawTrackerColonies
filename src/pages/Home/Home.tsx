@@ -7,6 +7,7 @@ import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 import { getColoniesFromServer, saveColoniesToServer } from '@services/coloniesService';
 import Colony from '../../types/Colony';
 import { useHistory } from 'react-router-dom';
+import Tabs from '../../components/Tabs/Tabs';
 
 // Assuming getColoniesFromServer returns an array of numbers
 const Home: React.FC = () => {
@@ -59,9 +60,9 @@ const Home: React.FC = () => {
           <h1>Home</h1>
         </div>
         <div>
+          <h2 className="custom-title">Colonies you currently feed</h2>
           {Array.isArray(userColonies) && userColonies.length > 0 ? (
             <>
-              <h2 className="custom-title">Colonies you currently feed</h2>
               {/* Render the list of colonies as cards */}
               {userColonies.map((colony) => (
                 <IonCard key={colony.id}>
@@ -84,10 +85,10 @@ const Home: React.FC = () => {
               ))}
             </>
           ) : (
-            <p>No colonies currently selected.</p>
+            <p className="text-center">No colonies currently selected.</p>
           )}
           <div className="button-container">
-            <IonButton className="select-colonies-btn" expand="full" onClick={openPopup}>
+            <IonButton className="select-colonies-btn" expand="full" shape="round" onClick={openPopup}>
               Select your colonies
             </IonButton>
           </div>
