@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';
-import { IonInput, IonButton, IonContent, IonPage, IonIcon, IonToolbar, IonHeader, IonTitle, IonRouterLink, IonLoading } from '@ionic/react';
+import { IonInput, IonButton, IonContent, IonPage, IonIcon, IonToolbar, IonHeader, IonTitle, IonRouterLink, IonLoading, useIonRouter } from '@ionic/react';
 import { pawOutline } from 'ionicons/icons';
 import pawLogo from '../../assets/pawlogo.png';
 import { useHistory } from 'react-router-dom';
@@ -12,9 +12,10 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const navigation = useIonRouter();
+  
   const redirectToRegister = () => {
-    history.push('/register');
+    navigation.push('/register', 'forward', 'replace');
   };
 
   const handleLogin = async () => {

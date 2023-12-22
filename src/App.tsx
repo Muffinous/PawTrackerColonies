@@ -33,6 +33,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Home from "./pages/Home/Home";
 import ReportFeeding from "./components/ReportFeeding/ReportFeeding";
+import Tabs from "./components/Tabs/Tabs";
 
 setupIonicReact();
 
@@ -49,9 +50,11 @@ const App: React.FC = () => {
         <IonRouterOutlet id="main" placeholder={undefined}>
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
-          <Route path="/home" component={Home} />
-          <Route path="/folder/:name" component={Page} />
+          <Route path="/home" component={Tabs} />
+          <Route path="/reports" component={Tabs} />
+          <Route path="/profile" component={Tabs} />
 
+          <Route path="/folder/:name" component={Page} />
           {/* Redirect to login by default */}
           <Redirect exact from="/" to="/login" />
         </IonRouterOutlet>
