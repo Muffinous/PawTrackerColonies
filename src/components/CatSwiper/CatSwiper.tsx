@@ -3,14 +3,15 @@ import React, { useEffect, useState } from 'react';
 import './CatSwiper.css'; // You can customize styles in this file
 import { IonButton, IonIcon } from '@ionic/react';
 import { checkmarkDone, createOutline } from 'ionicons/icons';
-import { saveColonyReport } from '@services/coloniesService';
+import { saveColonyReport } from '../../services/coloniesService';
 
 interface CatSwiperProps {
   cats: Cat[];
+  colonyId: string;
   onClose: () => void;
 }
 
-const CatSwiper: React.FC<CatSwiperProps> = ({ cats, onClose }) => {
+const CatSwiper: React.FC<CatSwiperProps> = ({ cats, colonyId, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [missingAnimals, setMissingAnimals] = useState<Cat[]>([]);
   const [fedAnimals, setFedAnimals] = useState<Cat[]>([]);
@@ -57,6 +58,7 @@ const CatSwiper: React.FC<CatSwiperProps> = ({ cats, onClose }) => {
   const handleSaveReport = () => {
     // logic to save the report
     const report = {
+      colony: colonyId,
       fedAnimals,
       missingAnimals,
       catDescriptions,

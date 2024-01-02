@@ -59,7 +59,7 @@ const ReportFeeding: React.FC<ReportFeedingProps> = ({ isOpen, onClose }) => {
       </IonHeader>
       <IonContent className="report-container">
         <div className="report-form">
-          <CatSwiper cats={cats} onClose={handlePopupClose}/>
+          <CatSwiper cats={cats} colonyId={colonyId} onClose={handlePopupClose}/>
         </div>
       </IonContent>
     </IonModal>

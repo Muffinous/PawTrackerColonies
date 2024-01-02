@@ -1,6 +1,7 @@
 interface ColonyReport {
     id: number;
     name: string;
+    colony: string;
     missingAnimals: Cat[];
     fedAnimals: Cat[];
     catDescriptions: { [key: number]: string }; // Assuming you're using cat IDs as keys for descriptions
