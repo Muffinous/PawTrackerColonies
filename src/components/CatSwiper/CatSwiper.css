@@ -158,6 +158,7 @@ button:hover {
 .summary-title {
   text-align-last: center;
   background-color: var(--ion-color-secondary);
+  color:black;
 }
 
 .summary-item {

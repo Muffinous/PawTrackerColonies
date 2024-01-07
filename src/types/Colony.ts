@@ -1,6 +1,7 @@
 interface Colony {
-    id: number;
+    id: string;
     name: string;
+    cats: Cat[];
     // Add other properties as needed
   }
   

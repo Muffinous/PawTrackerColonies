@@ -36,6 +36,16 @@ import ReportFeeding from "./components/ReportFeeding/ReportFeeding";
 import Tabs from "./components/Tabs/Tabs";
 
 setupIonicReact();
+// index.tsx or App.tsx
+import { initializeApp } from 'firebase/app';
+import { firebaseConfig } from "./firebaseConfig";
+import { getAuth } from "firebase/auth";
+import UserReport from "./pages/Reports/UserReport/UserReport";
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+console.log("APP Inicializada ", app)
+setupIonicReact();
 
 const App: React.FC = () => {
   return (
@@ -43,6 +53,7 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet id="seconday" placeholder={undefined}>
           {/* ... other routes ... */}
+          <Route path="/user-report/:reportId" component={UserReport} />
           <Route path="/report-feeding/:colonyId" component={ReportFeeding} />
           {/* ... other routes ... */}
         </IonRouterOutlet>

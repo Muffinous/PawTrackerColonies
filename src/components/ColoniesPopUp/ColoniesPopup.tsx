@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonModal,
   IonHeader,
@@ -15,27 +15,60 @@ import {
 import { close } from 'ionicons/icons';
 import './ColoniesPopup.css'
 // @ts-ignore
-import { saveColoniesToServer } from '../../services/coloniesService';
+import { getColoniesFromServer, saveColoniesToServer } from '../../services/coloniesService';
 import Colony from '../../types/Colony';
+import { getUserById } from '@services/userService';
+import User from '../../types/User';
 
 interface ColoniesPopupProps {
   isOpen: boolean;
+  userId: string;
   onClose: () => void;
   onSave: (selectedColonies: Colony[]) => void;
 }
 
-const coloniesData = [
-  { id: 1, name: 'Colony A' },
-  { id: 2, name: 'Colony B' },
-  { id: 3, name: 'Colony C' },
-  { id: 4, name: 'Colony D' },
-];
-
-const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }) => {
+const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, userId, onClose, onSave, }) => {
   const [selectedColonies, setSelectedColonies] = useState<Colony[]>([]);
+  const [coloniesData, setColoniesData] = useState<Colony[]>([]);
+  const [userData, setUserData] = useState<{ id: string; data: User }>();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storedUser = sessionStorage.getItem('user');
+
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+
+          if (parsedUser && parsedUser.userData && parsedUser.id) {
+            const userData = await getUserById(parsedUser.id);
+
+            setUserData({ id: parsedUser.id, data: userData });
+
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    }
+    const fetchColonies = async () => {
+      try {
+        // Fetch colonies from the server
+        const serverColonies = await getColoniesFromServer();
+        console.log("serverColonies ", serverColonies)
+        setColoniesData(serverColonies);
+      } catch (error) {
+        console.error('Error fetching colonies:', error);
+      }
+    };
+
+    if (isOpen) {
+      fetchColonies();
+      fetchData();
+    }
+  }, [isOpen]);
 
   const handlePopupClose = () => {
-    saveColoniesToServer(selectedColonies);
 
     // Close the popup
     onClose();
@@ -44,8 +77,15 @@ const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }
     console.log('Popup closed');
   };
 
-  const handleSave = () => {
-    // Save colonies and call the callback
+  const handleSave = async () => {
+    // Check if userData is defined before calling userData.id
+    if (userData && userData.id) {
+      await saveColoniesToServer(selectedColonies, userData.id);
+    } else {
+      console.error('User data is not available.');
+      // You might want to handle this case appropriately, e.g., show an error message.
+      return;
+    }
     onSave(selectedColonies);
     // Close the popup
     onClose();
@@ -79,7 +119,7 @@ const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }
         {/* Render the list of colonies */}
         {coloniesData.map((colony) => (
           <IonCard
-            key={colony.id}
+            key={colony.id} // Add this key prop
             onClick={() => handleColonySelection(colony)}
             style={{
               backgroundColor: selectedColonies.includes(colony)
@@ -96,8 +136,6 @@ const ColoniesPopup: React.FC<ColoniesPopupProps> = ({ isOpen, onClose, onSave }
             </IonCardContent>
           </IonCard>
         ))}
-
-
         <div className="button-container">
           <IonButton
             shape="round"

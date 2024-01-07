@@ -1,5 +1,5 @@
 interface Cat {
-    id: number;
-    image: string;
+    id: string;
+    img: string;
     name: string;
   }
