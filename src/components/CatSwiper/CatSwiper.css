@@ -74,7 +74,6 @@
   height: 60px;
   white-space: normal;
   border-radius: 15px;
-  margin-right: 10px;
 }
 
 .swipe-actions {
@@ -107,7 +106,7 @@
 
 button {
   color: black;
-  background-color: var(--ion-color-secondary);
+  background-color: white;
   /* Keep your secondary color */
   padding: 10px 20px;
   font-size: 16px;
@@ -124,9 +123,11 @@ button:hover {
 }
 
 .top-buttons {
+  background-color: var(--ion-color-secondary);
   display: flex;
   justify-content: space-between;
   width: 100%;
+  border-radius: 10px;
 }
 
 .top-left {

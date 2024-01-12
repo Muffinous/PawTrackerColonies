@@ -8,6 +8,8 @@ interface User {
     email: string;
     colonies: Colony[];
     profilePicture: string;
+    phoneNumber: string;
+    reports: string[]
   }
 
   export default User;

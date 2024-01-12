@@ -36,3 +36,8 @@
     color: #fff;
     /* Adjust text color */
 }
+
+.reports-colonies-card, .user-colonies-card {
+    padding: 5px !important;
+    margin: 5px !important;
+}

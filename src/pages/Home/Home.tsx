@@ -10,9 +10,11 @@ import { useHistory } from 'react-router-dom';
 import Tabs from '../../components/Tabs/Tabs';
 import User from '../../types/User';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getUserById } from '@services/userService';
 import { DocumentReference, getDoc } from 'firebase/firestore';
 import ColonyReport from '../../types/ColonyReport';
+import { getColoniesByIdFromServer, getColoniesCats } from '../../services/coloniesService';
+import { getUserById } from '../../services/userService';
+import { getReportByIdFromServer } from '../../services/reportsService';
 
 // Assuming getColoniesFromServer returns an array of numbers
 const Home: React.FC = () => {
@@ -21,9 +23,12 @@ const Home: React.FC = () => {
   const [userReports, setUserReports] = useState<ColonyReport[]>([]);
   const history = useHistory();
   const [userData, setUserData] = useState<{ id: string; data: User } | null>(null);
-
+  const [loading, setLoading] = useState(true); // Added loading state
+  const [cats, setCatsInfo] = useState<Cat[]>(/* Initial value */);
 
   useEffect(() => {
+    let isMounted = true;
+
     setIsPopupOpen(false);
 
     const auth = getAuth();
@@ -47,18 +52,25 @@ const Home: React.FC = () => {
                 if (userData.colonies != null) {
                   const coloniesData = await fetchColonyData(userData.colonies);
                   const reportsData = await fetchReportData(userData.reports);
-                  setUserColonies(coloniesData);
-                  setUserReports(reportsData);
-                  console.log("userRE", reportsData)
+
+                  if (isMounted) {
+                    setUserColonies(coloniesData);
+                    setUserReports(reportsData);
+                    console.log("userRE", reportsData)
+                    setLoading(false);
+                  }
                 }
               }
             }
           } catch (error) {
             console.error('Error fetching user data:', error);
+            if (isMounted) {
+              setLoading(false);
+            }
           }
         };
-
         fetchData();
+        
       }
     });
 
@@ -71,21 +83,22 @@ const Home: React.FC = () => {
       // console.log("Final User Data:", userData);
     }
     if (userColonies !== null) {
-      // console.log("Final Colonies Data:", userColonies);
+      console.log("Final Colonies Data:", userColonies);
     }
   }, [userData, userColonies, userReports]);
 
-  const fetchReportData = async (reportReferences: any[]) => {
+  const fetchReportData = async (reports: any[]) => {
     const reportsData = [];
 
-    for (const reportRef of reportReferences) {
-      console.log("reportRef ", reportRef)
+    for (const reportId of reports) {
+      console.log("reportId ", reportId)
       try {
-        const colonyDocSnapshot = await getDoc(reportRef);
-        console.log("colonyDocSnapshot ", colonyDocSnapshot)
-        const reportData = colonyDocSnapshot.data() as ColonyReport;
-        reportData.id = colonyDocSnapshot.id;
+        const reportData = await getReportByIdFromServer(reportId);
+        if (reportData) {
+          reportData.id = reportId;
+        }
 
+        console.log("report ", reportData)
         if (reportData) {
           reportsData.push(reportData);
         }
@@ -97,19 +110,18 @@ const Home: React.FC = () => {
     return reportsData;
   };
 
-  const fetchColonyData = async (colonyReferences: any[]) => {
+  const fetchColonyData = async (colonies: any[]) => {
     const coloniesData = [];
 
-    for (const colonyRef of colonyReferences) {
-      console.log("colonyRef ", colonyRef)
+    for (const colonyId of colonies) {
       try {
-        const colonyDocSnapshot = await getDoc(colonyRef);
-        console.log("colonyDocSnapshot ", colonyDocSnapshot)
-        const colonyData = colonyDocSnapshot.data() as Colony;
-        colonyData.id = colonyDocSnapshot.id;
+        const colonyData = await getColoniesByIdFromServer(colonyId);
+        colonyData.id = colonyId;
 
         if (colonyData && colonyData.cats) {
-          colonyData.cats = await fetchCatData(colonyData.cats);
+          // console.log("CATS colonyData.cats ", colonyData.cats)
+          // const cats = await getColoniesCats(colonyId);
+          // setCatsInfo(cats)
           coloniesData.push(colonyData);
         }
 
@@ -120,45 +132,23 @@ const Home: React.FC = () => {
     return coloniesData;
   };
 
-  const fetchCatData = async (catReferences: any[]) => {
-    const catsData = [];
-
-    for (const catRef of catReferences) {
-      try {
-        if (catRef instanceof DocumentReference) {
-          const catDocSnapshot = await getDoc(catRef);
-          const catData = catDocSnapshot.data() as Cat;
-          catData.id = catDocSnapshot.id;
-
-          if (catData) {
-            catsData.push(catData);
-          }
-        } else if (typeof catRef === 'string' && catRef.trim() !== '') {
-          console.log("Invalid catRef:", catRef);
-        }
-      } catch (error) {
-        console.error("Error fetching cat data:", error);
-      }
-    }
-
-    return catsData;
-  };
-
-
   const openPopup = () => {
     setIsPopupOpen(true);
   };
 
   const handleSaveColonies = async (selectedColonies: Colony[]) => {
+    // Extract only the IDs from selectedColonies
+    const selectedColonyIds = selectedColonies.map(colony => colony.id);
+
     // Save the selected colonies to the server
-    await saveColoniesToServer(selectedColonies, userData?.id);
+    await saveColoniesToServer(selectedColonyIds, userData?.id);
 
     // Update the state to reflect the changes
     setUserColonies(selectedColonies);
   };
 
   const handleColonySelection = (colony: Colony) => {
-    console.log(`Selected Colonies: ${JSON.stringify(colony)}`);
+    console.log(`Selected Colonies: ${JSON.stringify(colony)}`, colony);
     // Navigate to the ReportFeeding page with the colony ID as a parameter
     history.push(`/report-feeding/${colony.id}`);
   };
@@ -167,51 +157,62 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar color="primary">
-          <IonTitle className="app-title">PawTracker (Colonies version)</IonTitle>
+          <IonTitle className="app-title">PawTracker (Colonies)</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="home-container">
-        <div className="header">
-          <img src={pawLogo} alt="Cat Logo" className="logo" />
-          <h1>Home</h1>
-        </div>
-        <div>
-          <h2 className="custom-title">Colonies you currently feed</h2>
-          {Array.isArray(userColonies) && userColonies.length > 0 ? (
-            <>
-              {/* Render the list of colonies as cards */}
-              {userColonies.map((colony) => (
-                <IonCard key={colony.id}>
-                  <IonCardHeader>
-                    <IonCardTitle>{colony.name}</IonCardTitle>
-                  </IonCardHeader>
-                  <IonCardContent className="report-feeding-content text-center">
-                  <p>Description or additional information about the colony.</p>
-                    <div className="label-container">
-                      <IonLabel className="status-label">Number of cats: {colony.cats.length}</IonLabel>
-                    </div>
-                    <IonButton
-                      className='report-feeding-button'
-                      expand="full"
-                      shape="round"
-                      onClick={() => handleColonySelection(colony)}
-                    >
-                      Report Feeding
-                    </IonButton>
-                  </IonCardContent>
-                </IonCard>
-              ))}
-            </>
-          ) : (
-            <p className="text-center">No colonies currently selected.</p>
-          )}
-          <div className="button-container">
-            <IonButton className="select-colonies-btn" expand="full" shape="round" onClick={openPopup}>
-              Select your colonies
-            </IonButton>
+        {loading ? (
+          <div className="loading-container">
+            <h5>Loading <span className="loading-dots"></span></h5>
+            <img src="src/assets/loading/catloading.gif" alt="Loading" />
           </div>
-        </div>
-        {isPopupOpen && userData && <ColoniesPopup isOpen={isPopupOpen} userId={userData?.id} onClose={() => setIsPopupOpen(false)} onSave={handleSaveColonies} />}
+        ) : (
+          <div>
+            <div className="header">
+              <img src={pawLogo} alt="Cat Logo" className="logo" />
+              <h1>Home</h1>
+            </div>
+            <div>
+              <h2 className="custom-title">Colonies you currently feed</h2>
+              {Array.isArray(userColonies) && userColonies.length > 0 ? (
+                <>
+                  {/* Render the list of colonies as cards */}
+                  {userColonies.map((colony) => (
+                    <IonCard key={colony.id}>
+                      <IonCardHeader>
+                        <IonCardTitle>{colony.name}</IonCardTitle>
+                      </IonCardHeader>
+                      <IonCardContent className="report-feeding-content text-center">
+                        <p>Description or additional information about the colony.</p>
+                        <div className="label-container">
+                          <IonLabel className="status-label">
+                            Number of cats: {colony.cats.filter(catId => catId.trim() !== '').length}
+                          </IonLabel>
+                        </div>
+                        <IonButton
+                          className='report-feeding-button'
+                          expand="full"
+                          shape="round"
+                          onClick={() => handleColonySelection(colony)}
+                        >
+                          Report Feeding
+                        </IonButton>
+                      </IonCardContent>
+                    </IonCard>
+                  ))}
+                </>
+              ) : (
+                <p className="text-center">No colonies currently selected.</p>
+              )}
+              <div className="button-container">
+                <IonButton className="select-colonies-btn" expand="full" shape="round" onClick={openPopup}>
+                  Select your colonies
+                </IonButton>
+              </div>
+            </div>
+            {isPopupOpen && userData && <ColoniesPopup isOpen={isPopupOpen} userId={userData?.id} onClose={() => setIsPopupOpen(false)} onSave={handleSaveColonies} />}
+          </div>
+        )}
       </IonContent>
     </IonPage>
   );

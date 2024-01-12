@@ -24,12 +24,6 @@ const ReportFeeding: React.FC<ReportFeedingProps> = ({ isOpen, onClose }) => {
   const { colonyId } = useParams<{ colonyId: string }>();
   const history = useHistory();
 
-  const cats = [
-    { id: 1, image: 'assets/pawlogo.png', name: 'teo' },
-    { id: 2, image: 'assets/pawlogo.png', name: 'perla' },
-    { id: 3, image: 'assets/pawlogo.png', name: 'KITTINA' },
-  ];
-
   const handlePopupClose = () => {
     // Close the modal
     history.goBack(); // This assumes you want to go back to the previous page
@@ -59,7 +53,7 @@ const ReportFeeding: React.FC<ReportFeedingProps> = ({ isOpen, onClose }) => {
       </IonHeader>
       <IonContent className="report-container">
         <div className="report-form">
-          <CatSwiper cats={cats} colonyId={colonyId} onClose={handlePopupClose}/>
+          <CatSwiper colonyId={colonyId} onClose={handlePopupClose}/>
         </div>
       </IonContent>
     </IonModal>

@@ -4,14 +4,16 @@ import { IonContent, IonPage, IonCard, IonCardHeader, IonCardTitle, IonCardConte
 import pawLogo from '../../../assets/pawlogo.png';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 
-import { DocumentReference, collection, getDoc, getFirestore } from 'firebase/firestore';
 import ColonyReport from '../../../types/ColonyReport';
 import { useHistory, useParams } from 'react-router-dom';
 import { getReportByIdFromServer } from '../../../services/reportsService';
 import Colony from '../../../types/Colony';
 import User from '../../../types/User';
-import { close } from 'ionicons/icons';
+import { callOutline, close, mailOutline } from 'ionicons/icons';
 import { Auth, getAuth } from 'firebase/auth';
+import { getColoniesByIdFromServer } from '../../../services/coloniesService';
+import { getUserById } from '../../../services/userService';
+import { getCatById } from '../../../services/catService';
 
 
 const UserReport: React.FC = () => {
@@ -21,6 +23,11 @@ const UserReport: React.FC = () => {
     let dateReport = { day: 1, month: 1, year: 2024, hour: 13, minutes: 0 }
     const [loading, setLoading] = useState(true); // Added loading state
     const [catImages, setCatImages] = useState<string[]>([]); // State to store cat image URLs
+
+    const [fedCats, setFedCats] = useState<Cat[]>([]); // State to store cat image URLs
+    const [missingCats, setMissingCats] = useState<Cat[]>([]); // State to store cat image URLs
+    const [colony, setColonyData] = useState<Colony>(); // State to store cat image URLs
+
     const auth = getAuth();
 
 
@@ -41,14 +48,15 @@ const UserReport: React.FC = () => {
                 const missingCatsData = await fetchCatData(reportData.catsMissing);
 
                 // Update the reportData with the fetched details
-                if (colonyData != null) {
-                    reportData.colony = colonyData;
+                if (colonyData != null && colonyData.id) {
+                    console.log("colony ", colonyData)
+                    reportData.colony = colonyData.id;
+                    setColonyData(colonyData);
                 }
                 if (userData) {
                     reportData.user = userData;
                 }
-                reportData.catsFed = fedCatsData;
-                reportData.catsMissing = missingCatsData;
+
                 if (reportData && reportData.datetime) {
                     // Attempt to convert to Date
                     const reportDate = new Date(reportData.datetime.seconds * 1000);
@@ -67,6 +75,10 @@ const UserReport: React.FC = () => {
 
                         // Update the state only if the component is still mounted
                         if (isMounted) {
+                            console.log("fedCatsData ", fedCatsData)
+                            console.log("missingCatsData ", missingCatsData)
+                            setFedCats(fedCatsData)
+                            setMissingCats(missingCatsData)
                             setReportData(reportData);
                             setLoading(false);
                         }
@@ -98,13 +110,12 @@ const UserReport: React.FC = () => {
         return new Date(milliseconds);
     };
 
-    const fetchColonyData = async (colonyRef: any) => {
+    const fetchColonyData = async (colonyId: any) => {
         try {
-            const colonyDocSnapshot = await getDoc(colonyRef);
-            const colonyData = colonyDocSnapshot.data() as Colony;
+            const colonyData = await getColoniesByIdFromServer(colonyId);
 
             if (colonyData && colonyData.cats) {
-                colonyData.id = colonyDocSnapshot.id;
+                colonyData.id = colonyId;
                 colonyData.cats = await fetchCatData(colonyData.cats);
                 return colonyData;
             }
@@ -114,89 +125,40 @@ const UserReport: React.FC = () => {
         }
     };
 
-    const fetchReportData = async (reportReferences: any[]) => {
-
-
-        const reportsData = [];
-
-        for (const reportRef of reportReferences) {
-            try {
-                const reportDocSnapshot = await getDoc(reportRef);
-                const reportData = reportDocSnapshot.data() as ColonyReport;
-
-                if (reportData && reportData.colony instanceof DocumentReference) {
-                    // Fetch the referenced colony document
-                    const colonyDocSnapshot = await getDoc(reportData.colony);
-
-                    // Extract the necessary data from the colony document
-                    const colonyData = colonyDocSnapshot.data() as Colony;
-                    colonyData.id = colonyDocSnapshot.id;
-
-                    reportData.id = reportDocSnapshot.id;
-                    reportData.colony = colonyData;
-                    // console.log("report data", reportData);
-
-                    // Fetch cat data for fed cats
-                    const fedCatsData = await fetchCatData(reportData.catsFed);
-                    reportData.catsFed = fedCatsData;
-
-                    const catsMissingData = await fetchCatData(reportData.catsMissing);
-                    reportData.catsMissing = catsMissingData;
-
-                    const userData = await fetchUserData(reportData.user);
-                    if (userData !== null) {
-                        reportData.user = userData;
-                    }
-                    console.log("report data", reportData)
-                    reportsData.push(reportData);
-                }
-
-            } catch (error) {
-                console.error("Error fetching report data:", error);
-            }
-        }
-
-        return reportsData;
-    };
-
-    const fetchCatData = async (catReferences: any[]) => {
+    const fetchCatData = async (catIds: any[]) => {
         const catsData = [];
 
-        for (const catRef of catReferences) {
+        for (const catId of catIds) {
             try {
-                if (catRef instanceof DocumentReference) {
-                    const catDocSnapshot = await getDoc(catRef);
-                    const catData = catDocSnapshot.data() as Cat;
-                    catData.id = catDocSnapshot.id;
+                const catData = await getCatById(catId);
+                catData.id = catId;
 
-                    if (catData && catData.img) {
-                        // Fetch download URL for the cat image
-                        const storage = getStorage();
-                        const imageRef = ref(storage, catData.img);
+                if (catData && catData.img) {
+                    // Fetch download URL for the cat image
+                    const storage = getStorage();
+                    const imageRef = ref(storage, catData.img);
 
-                        const user = auth.currentUser;
-                        if (user) {
-                            try {
-                                // If authenticated, get the download URL with the user's token
-                                const imageURL = await getDownloadURL(imageRef);
-                                catData.img = imageURL; // Replace the path with the actual URL
-                            } catch (error) {
-                                console.error('Error fetching download URL:', error);
-                                // Handle the error, e.g., display a placeholder image
-                                catData.img = 'path/to/placeholder-image.jpg';
-                            }
-                        } else {
-                            // If the user is not authenticated, display a placeholder image
+                    const user = auth.currentUser;
+                    if (user) {
+                        try {
+                            // If authenticated, get the download URL with the user's token
+                            const imageURL = await getDownloadURL(imageRef);
+                            catData.img = imageURL; // Replace the path with the actual URL
+                        } catch (error) {
+                            console.error('Error fetching download URL:', error);
+                            // Handle the error, e.g., display a placeholder image
                             catData.img = 'path/to/placeholder-image.jpg';
                         }
+                    } else {
+                        // If the user is not authenticated, display a placeholder image
+                        catData.img = 'path/to/placeholder-image.jpg';
                     }
-
-                    if (catData) {
-                        catsData.push(catData);
-                    }
-                } else if (typeof catRef === 'string' && catRef.trim() !== '') {
-                    console.log("Invalid catRef:", catRef);
                 }
+
+                if (catData) {
+                    catsData.push(catData);
+                }
+
             } catch (error) {
                 console.error("Error fetching cat data:", error);
             }
@@ -207,29 +169,27 @@ const UserReport: React.FC = () => {
         return catsData;
     };
 
-    const fetchUserData = async (userReference: any) => {
+    const fetchUserData = async (userId: any) => {
         try {
-            const userDocSnapshot = await getDoc(userReference);
-            const userData = userDocSnapshot.data() as User;
-            userData.uid = userDocSnapshot.id;
-
-            const storage = getStorage();
-            const imageRef = ref(storage, userData.profilePicture);
+            const userData = await getUserById(userId) as User;
 
             const user = auth.currentUser;
-            if (user) {
+            if (user && userData.profilePicture !== '') {
                 try {
+                    const storage = getStorage();
+                    const imageRef = ref(storage, userData.profilePicture);
+
                     // If authenticated, get the download URL with the user's token
                     const imageURL = await getDownloadURL(imageRef);
                     userData.profilePicture = imageURL; // Replace the path with the actual URL
                 } catch (error) {
                     console.error('Error fetching download URL:', error);
                     // Handle the error, e.g., display a placeholder image
-                    userData.profilePicture = 'path/to/placeholder-image.jpg';
+                    userData.profilePicture = 'src/assets/placeholders/user-placeholder.png';
                 }
             } else {
                 // If the user is not authenticated, display a placeholder image
-                userData.profilePicture  = 'src/assets/placeholders/user-placeholder.png';
+                userData.profilePicture = 'src/assets/placeholders/user-placeholder.png';
             }
 
             return userData;
@@ -253,11 +213,14 @@ const UserReport: React.FC = () => {
     }
 
     const getDateHoursValue = () => {
-        let date = '0:0'
+        let date = '00:00'
         if (dataReport !== null && dataReport !== undefined) {
             const reportDate = new Date(dataReport.datetime.seconds * 1000);
-            console.log("hours ", reportDate.getHours().toString())
-            date = reportDate.getHours().toString() + ':' + reportDate.getMinutes().toString()
+
+            const hours = reportDate.getHours().toString();
+            const minutes = reportDate.getMinutes().toString().padStart(2, '0'); // Ensure two digits
+
+            date = hours + ':' + minutes
         }
         return date
     }
@@ -267,7 +230,7 @@ const UserReport: React.FC = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>
-                        Report for {dataReport?.colony.name} Colony - {getDateValue()}
+                        Report for {colony?.name} Colony - {getDateValue()}
                     </IonTitle>
                     <IonButton slot="end" onClick={handlePopupClose}>
                         <IonIcon icon={close} />
@@ -276,8 +239,10 @@ const UserReport: React.FC = () => {
             </IonHeader>
             <IonContent className="report-container">
                 {loading ? (
-                    // Display a loading spinner or message while data is being fetched
-                    <p>Loading...</p>
+                    <div className="loading-container">
+                        <h5>Loading <span className="loading-dots"></span></h5>
+                        <img src="src/assets/loading/catloading.gif" alt="Loading" />
+                    </div>
                 ) : (
                     <div>
                         {dataReport ? ( // Change the condition
@@ -285,7 +250,7 @@ const UserReport: React.FC = () => {
                                 <IonCard>
                                     <IonCardContent>
                                         <div className="report-details">
-                                            <IonCardTitle>{dataReport.colony.name}</IonCardTitle>
+                                            <IonCardTitle>{colony?.name}</IonCardTitle>
                                             <IonLabel className="date-label">{getDateValue()}</IonLabel>
                                         </div>
                                         <div className="hour-details">
@@ -294,23 +259,39 @@ const UserReport: React.FC = () => {
                                     </IonCardContent>
                                 </IonCard>
 
-                                <IonCard key={1} className="report-card">
+                                <IonCard key={1} className="report-card-user">
                                     <IonCardHeader>
                                         <div className="summary-title">
                                             <h6> - Feeder - </h6>
                                         </div>
                                     </IonCardHeader>
                                     <IonCardContent>
-                                        <div className="feeder-info">
-                                            <h6>Feeder</h6>
-                                            <p>{dataReport.user.name} {dataReport.user.lastname}</p>
-                                        </div>
-                                        <div className="feeder-profile">
-                                            {/* Add profile picture here */}
-                                            <img className="profile-picture" src={dataReport.user.profilePicture} alt="Profile" />
+                                        <div className="feeder-content">
+                                            <div className="feeder-info">
+                                                <div className="dot-line">
+                                                    &middot; &middot; &middot; &middot; &middot;  &middot; &middot; &middot; &middot; &middot; &middot; &middot;
+                                                </div>
+                                                <p>{dataReport.user.name} {dataReport.user.lastname}</p>
+                                                <div className="dot-line">
+                                                    &middot; &middot; &middot; &middot; &middot;  &middot; &middot; &middot; &middot; &middot; &middot; &middot;
+                                                </div>
+                                                <div className="feeder-contact">
+                                                    <IonIcon icon={mailOutline} className="contact-icon" />
+                                                    <a href={`mailto:${dataReport.user.email}`}>{dataReport.user.email}</a>
+                                                </div>
+                                                <div className="feeder-contact">
+                                                    <IonIcon icon={callOutline} className="contact-icon" />
+                                                    <a href={`tel:${dataReport.user.phoneNumber}`}>{dataReport.user.phoneNumber}</a>
+                                                </div>
+                                            </div>
+                                            <div className="feeder-profile">
+                                                {/* Add profile picture here */}
+                                                <img className="profile-picture" src={dataReport.user.profilePicture} alt="Profile" />
+                                            </div>
                                         </div>
                                     </IonCardContent>
                                 </IonCard>
+
 
                                 <IonCard key={2} className="report-card-buddies">
                                     <IonCardHeader>
@@ -333,7 +314,7 @@ const UserReport: React.FC = () => {
                                         <div className='cats-fed'>
                                             <IonGrid>
                                                 <IonRow>
-                                                    {dataReport.catsFed.map((cat, index) => (
+                                                    {fedCats.map((cat, index) => (
                                                         <IonCol size="6" key={index}>
                                                             <IonImg className="cat-img" src={cat.img} alt={`Cat ${index + 1}`} />
                                                         </IonCol>
@@ -365,7 +346,7 @@ const UserReport: React.FC = () => {
                                         <div className='cats-missing'>
                                             <IonGrid>
                                                 <IonRow>
-                                                    {dataReport.catsMissing.map((cat, index) => (
+                                                    {missingCats.map((cat, index) => (
                                                         <IonCol size="6" key={index}>
                                                             <IonImg className="cat-img" src={cat.img} alt={`Cat ${index + 1}`} />
                                                         </IonCol>

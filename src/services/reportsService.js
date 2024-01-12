@@ -28,6 +28,7 @@ export const getReportsFromServer = async () => {
 };
 
 export const getReportByIdFromServer = async (reportId) => {
+    console.log("get report by id ", reportId);
     try {
         const firestore = getFirestore();
         const reportDocRef = doc(firestore, 'reports', reportId);
@@ -38,7 +39,8 @@ export const getReportByIdFromServer = async (reportId) => {
                 id: reportDocSnapshot.id,
                 ...reportDocSnapshot.data(),
             };
-            console.log('Report retrieved from the server:', reportData);
+
+            console.log('Report retrieved from the server:', reportData, reportData.id);
             return reportData;
         } else {
             console.error('Report not found.');

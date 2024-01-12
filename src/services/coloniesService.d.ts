@@ -6,6 +6,8 @@ export function saveColoniesToServer(colonies: Colony[], userId: string): Promis
 export function saveColonyReport(report: ColonyReport): boolean;
 export function getColoniesFromServer(): Promise<Colony[]>;
 export function getColoniesReports(): Promise<ColonyReport[]>;
+export function getColoniesCats(colonyId: string): Promise<Cat[]>;
+export function getColoniesByIdFromServer(colonyId: string): Promise<Colony>;
 
 // coloniesService.js
 import { getFirestore, collection, addDoc, serverTimestamp, doc, getDocs, updateDoc } from 'firebase/firestore';
