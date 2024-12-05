@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
-import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonLabel, IonRouterLink } from '@ionic/react';
+import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonLabel, IonRouterLink, IonButtons, IonMenuButton } from '@ionic/react';
 import pawLogo from '../../assets/pawlogo.png';
 import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 // @ts-ignore
@@ -86,7 +86,7 @@ const Profile: React.FC = () => {
         };
 
         fetchData();
-        
+
       }
     });
 
@@ -207,6 +207,9 @@ const Profile: React.FC = () => {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle className="app-title">PawTracker (Colonies)</IonTitle>
+          <IonButtons slot="end"> {/* Use slot="end" for placing elements on the right side */}
+            <IonMenuButton /> {/* Menu button */}
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent className="home-container">

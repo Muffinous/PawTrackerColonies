@@ -1,28 +1,72 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Login.css';
-import { IonInput, IonButton, IonContent, IonPage, IonIcon, IonToolbar, IonHeader, IonTitle, IonRouterLink, IonLoading, useIonRouter, IonToast } from '@ionic/react';
-import { pawOutline } from 'ionicons/icons';
+import {
+  IonInput,
+  IonButton,
+  IonContent,
+  IonPage,
+  IonIcon,
+  IonToolbar,
+  IonHeader,
+  IonTitle,
+  IonRouterLink,
+  IonLoading,
+  IonToast,
+  useIonRouter,
+} from '@ionic/react';
+import { pawOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import pawLogo from '../../assets/pawlogo.png';
 import { useHistory } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 import User from '../../types/User';
 
-import { getFirestore, collection, getDocs, query, DocumentData, where, doc, getDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+  doc,
+  getDoc,
+} from 'firebase/firestore';
 
-const Login: React.FC = () => {
+interface LoginProps {
+  setIsAuthenticated: (isAuth: boolean) => void;
+}
+
+const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigation = useIonRouter();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [userData, setUserData] = useState<{ id: string; data: User } | null>(null);
+  const [userData, setUserData] = useState<{ id: string; data: User } | null>(
+    null
+  );
 
+  
   const firestore = getFirestore();
   const auth = getAuth();
 
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      // Si ya hay un usuario autenticado, redirige automáticamente
+      history.push('/home');
+    }
+  }, [auth, history]);
+  
   const redirectToRegister = () => {
     navigation.push('/register', 'forward', 'replace');
+  };
+
+  const redirectToPasswordRecovery = () => {
+    history.push('/password-recovery'); // Replace '/password-recovery' with the actual path to your password recovery page
   };
 
   const handleLogin = async () => {
@@ -32,17 +76,20 @@ const Login: React.FC = () => {
       // Validate that the username is not empty or contains invalid characters
       if (!username || /[.#$[\]]/.test(username)) {
         setLoading(false);
-        throw new Error('Invalid username');
+        throw new Error('Invalid username.');
       }
-
+      if (!password) {
+        setLoading(false);
+        throw new Error('You need to enter a password.');
+      }
       try {
         const usersCollection = collection(firestore, 'users');
-        console.log("usersCollection ", usersCollection)
-        const queryByUsername = query(usersCollection, where('username', '==', username));
-        console.log("userquery ", queryByUsername)
+        const queryByUsername = query(
+          usersCollection,
+          where('username', '==', username)
+        );
         const snapshot = await getDocs(queryByUsername);
 
-        console.log("snapshot ", snapshot.docs)
         if (snapshot.size > 0) {
           // Get the first document in the snapshot
           const firstDocument = snapshot.docs[0];
@@ -55,12 +102,14 @@ const Login: React.FC = () => {
 
           if (userData && userData.email) {
             // Use Firebase authentication to sign in with the retrieved email and password
-            console.log('Username exists! Document ID:', documentId, userData);
-            console.log('Mail: ', userData.email, 'username: ', username, 'pass: ', password);
             setUserData({ id: documentId, data: userData });
-            sessionStorage.setItem('user', JSON.stringify({id:documentId, userData}));
+            sessionStorage.setItem(
+              'user',
+              JSON.stringify({ id: documentId, userData })
+            );
 
             await signInWithEmailAndPassword(auth, userData.email, password);
+            setIsAuthenticated(true);
 
             // Redirect to the home page or any other page upon successful login
             history.push('/home');
@@ -83,6 +132,7 @@ const Login: React.FC = () => {
       setLoading(false);
     }
   };
+
   return (
     <IonPage>
       <IonHeader>
@@ -94,15 +144,41 @@ const Login: React.FC = () => {
         <div className="login-form">
           <img src={pawLogo} alt="Cat Logo" className="logo" />
           <h1>Login</h1>
-          <IonInput type="text" placeholder="Username" value={username} onIonChange={(e) => setUsername(e.detail.value!)} className="input-field" />
-          <IonInput type="password" placeholder="Password" value={password} onIonChange={(e) => setPassword(e.detail.value!)} className="input-field" />
+          <IonInput
+            placeholder="Username"
+            value={username}
+            onIonChange={(e) => setUsername(e.detail.value!)}
+            className="input-field"
+          />
+          <div className="password-input-container">
+            <IonInput
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Password"
+              value={password}
+              onIonChange={(e) => setPassword(e.detail.value!)}
+              className="input-field password-input"
+            >
+              <div>
+                <IonIcon
+                  slot="end"
+                  icon={showPassword ? eyeOffOutline : eyeOutline}
+                  className="eye-icon"
+                  onClick={() => setShowPassword(!showPassword)}
+                />
+              </div>
+
+            </IonInput>
+
+          </div>
+
           <IonButton expand="full" className="login-button" onClick={handleLogin}>
             Login
           </IonButton>
-          <p className="login-link">
-            If you want to create an account,{' '}
-            <IonRouterLink onClick={redirectToRegister}>register here</IonRouterLink>.
-          </p>
+          <div className="login-links">
+            <p>If you want to create an account,{' '}
+              <IonRouterLink onClick={redirectToRegister}>register here.</IonRouterLink></p>
+            <p> Forgot Password? {' '}<IonRouterLink onClick={redirectToPasswordRecovery}>Recover your password.</IonRouterLink></p>
+          </div>
           <IonToast
             isOpen={!!errorMessage}
             onDidDismiss={() => setErrorMessage(null)}
@@ -113,9 +189,7 @@ const Login: React.FC = () => {
         </div>
       </IonContent>
     </IonPage>
-
   );
 };
 
 export default Login;
-

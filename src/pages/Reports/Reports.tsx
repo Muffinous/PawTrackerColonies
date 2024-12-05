@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Reports.css';
-import { IonContent, IonPage, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonLabel, IonRouterLink, IonHeader, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonPage, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonLabel, IonRouterLink, IonHeader, IonTitle, IonToolbar, IonMenuButton } from '@ionic/react';
 import pawLogo from '../../assets/pawlogo.png';
 import { getColoniesByIdFromServer, getColoniesReports } from '../../services/coloniesService';
 import ColonyReport from '../../types/ColonyReport';
@@ -58,7 +58,7 @@ const Reports: React.FC = () => {
     };
 
     fetchExistingReports();
-    
+
   }, []);
 
   const fetchColonyData = async (colonyId: any) => {
@@ -102,6 +102,7 @@ const Reports: React.FC = () => {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle className="app-title">PawTracker (Colonies)</IonTitle>
+          <IonMenuButton /> {/* Include the MenuButton component */}
         </IonToolbar>
       </IonHeader>
       <IonContent className="home-container">

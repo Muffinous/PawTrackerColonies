@@ -4,15 +4,13 @@ import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCar
 import pawLogo from '../../assets/pawlogo.png';
 import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 // @ts-ignore
-import { getColoniesFromServer, saveColoniesToServer } from '@services/coloniesService';
+import { saveColoniesToServer } from '@services/coloniesService';
 import Colony from '../../types/Colony';
 import { useHistory } from 'react-router-dom';
-import Tabs from '../../components/Tabs/Tabs';
 import User from '../../types/User';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { DocumentReference, getDoc } from 'firebase/firestore';
 import ColonyReport from '../../types/ColonyReport';
-import { getColoniesByIdFromServer, getColoniesCats } from '../../services/coloniesService';
+import { getColoniesByIdFromServer } from '../../services/coloniesService';
 import { getUserById } from '../../services/userService';
 import { getReportByIdFromServer } from '../../services/reportsService';
 
@@ -70,7 +68,7 @@ const Home: React.FC = () => {
           }
         };
         fetchData();
-        
+
       }
     });
 

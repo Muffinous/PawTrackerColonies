@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   IonApp,
   IonRouterOutlet,
@@ -41,6 +41,11 @@ import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from "./firebaseConfig";
 import { getAuth } from "firebase/auth";
 import UserReport from "./pages/Reports/UserReport/UserReport";
+import RecoverPass from "./pages/RecoverPass/RecoverPass";
+import MenuContent from "./components/MenuContent/MenuContent";
+import EditProfile from "./pages/Settings/EditProfile/EditProfile";
+import NewColony from "./components/NewColony/NewColony";
+import RegisterCats from "./components/NewColony/RegisterCats/RegisterCats";
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -48,27 +53,34 @@ console.log("APP Inicializada ", app)
 setupIonicReact();
 
 const App: React.FC = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
   return (
     <IonApp>
       <IonReactRouter>
-        <IonRouterOutlet id="seconday" placeholder={undefined}>
-          {/* ... other routes ... */}
-          <Route path="/user-report/:reportId" component={UserReport} />
-          <Route path="/report-feeding/:colonyId" component={ReportFeeding} />
-          {/* ... other routes ... */}
-        </IonRouterOutlet>
-
-        <IonRouterOutlet id="main" placeholder={undefined}>
-          <Route path="/login" component={Login} />
-          <Route path="/register" component={Register} />
-          <Route path="/home" component={Tabs} />
-          <Route path="/reports" component={Tabs} />
-          <Route path="/profile" component={Tabs} />
-
-          <Route path="/folder/:name" component={Page} />
-          {/* Redirect to login by default */}
-          <Redirect exact from="/" to="/login" />
-        </IonRouterOutlet>
+        <IonSplitPane contentId="main">
+          <MenuContent /> {/* Your menu content component */}
+          <IonRouterOutlet id="main" placeholder={undefined}>
+            {/* {isAuthenticated ? ( */}
+              {/* <> */}
+                <Route path="/home" component={Tabs} />
+                <Route path="/profile" component={Tabs} />
+                <Route path="/reports" component={Tabs} />
+                <Route path="/edit-profile" component={EditProfile} />
+                <Route path="/new-colony" component={NewColony} />
+                <Route path="/register-cats" component={RegisterCats} />
+                <Redirect exact from="/" to="/home" />
+              {/* </> */}
+            {/* // ) : ( */}
+              <>
+                <Route path="/login" render={() => <Login setIsAuthenticated={setIsAuthenticated} />} />
+                <Route path="/register" component={Register} />
+                <Route path="/password-recovery" component={RecoverPass} />
+                {/* <Redirect exact from="/" to="/login" /> */}
+              </>
+            {/* // )} */}
+          </IonRouterOutlet>
+        </IonSplitPane>
       </IonReactRouter>
     </IonApp>
   );
