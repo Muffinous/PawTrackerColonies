@@ -14,30 +14,21 @@ import {
   IonToast,
   useIonRouter,
 } from '@ionic/react';
-import { pawOutline, eyeOutline, eyeOffOutline } from 'ionicons/icons';
+import { eyeOutline, eyeOffOutline } from 'ionicons/icons';
 import pawLogo from '../../assets/pawlogo.png';
 import { useHistory } from 'react-router-dom';
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import User from '../../types/User';
+import User from '../../models/User';
 
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  query,
-  where,
-  doc,
-  getDoc,
-} from 'firebase/firestore';
+import AuthService from '../../services/auth.service';
+import { useUser } from '../../components/contexts/UserContextType';
+import UserService from '../../services/user.service';
 
 interface LoginProps {
   setIsAuthenticated: (isAuth: boolean) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
+  const { setUser } = useUser();
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -49,17 +40,16 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
     null
   );
 
-  
-  const firestore = getFirestore();
-  const auth = getAuth();
-
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      // Si ya hay un usuario autenticado, redirige automáticamente
-      history.push('/home');
+    const token = localStorage.getItem('token');
+    if (token) {
+      console.log("token ", token)
+      // Idealmente aquí puedes verificar que el token es válido si tienes forma de hacerlo
+      //setIsAuthenticated(true);
+      // history.push('/home');
     }
-  }, [auth, history]);
+  }, []);
+
   
   const redirectToRegister = () => {
     navigation.push('/register', 'forward', 'replace');
@@ -70,64 +60,35 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
   };
 
   const handleLogin = async () => {
+    setLoading(true);
+    setErrorMessage(null);
+
     try {
-      setLoading(true);
-
-      // Validate that the username is not empty or contains invalid characters
-      if (!username || /[.#$[\]]/.test(username)) {
-        setLoading(false);
-        throw new Error('Invalid username.');
+      if (!username || !password) {
+        setErrorMessage('Please enter username and password')
+        throw new Error('Please enter username and password');
       }
-      if (!password) {
-        setLoading(false);
-        throw new Error('You need to enter a password.');
-      }
-      try {
-        const usersCollection = collection(firestore, 'users');
-        const queryByUsername = query(
-          usersCollection,
-          where('username', '==', username)
-        );
-        const snapshot = await getDocs(queryByUsername);
 
-        if (snapshot.size > 0) {
-          // Get the first document in the snapshot
-          const firstDocument = snapshot.docs[0];
+      const loginData = { username, password };
+      const { token, user } = await AuthService.login(loginData);
 
-          // Access the ID of the document and get the user data
-          const documentId = firstDocument.id;
-          const userDocRef = doc(usersCollection, documentId);
-          const userDocSnapshot = await getDoc(userDocRef);
-          const userData: User = userDocSnapshot.data() as User;
+      const fullUser = await UserService.getUserByUsername(username);
 
-          if (userData && userData.email) {
-            // Use Firebase authentication to sign in with the retrieved email and password
-            setUserData({ id: documentId, data: userData });
-            sessionStorage.setItem(
-              'user',
-              JSON.stringify({ id: documentId, userData })
-            );
+      setUser(fullUser);
+      
+      console.log("login user ", user, token)
+      console.log("fulluser ", fullUser)
 
-            await signInWithEmailAndPassword(auth, userData.email, password);
-            setIsAuthenticated(true);
+      // Guardar token (ejemplo: localStorage)
+      localStorage.setItem('token', token);
 
-            // Redirect to the home page or any other page upon successful login
-            history.push('/home');
-          } else {
-            setLoading(false);
-            // If username not found or no associated email, display an error message
-            setErrorMessage('Invalid username or password');
-          }
-        }
-      } catch (error) {
-        setLoading(false);
-        setErrorMessage('Error getting users data.');
-        console.error('Error fetching users:', error);
-      }
-    } catch (error) {
-      setLoading(false);
-      console.error('Login error:', error);
-      setErrorMessage('Login failed. Please try again.');
+      // Guardar info usuario si quieres
+      sessionStorage.setItem('user', JSON.stringify(fullUser));
+
+      setIsAuthenticated(true);
+      history.push('/home');
+    } catch (error: any) {
+      setErrorMessage(error.response?.data?.message || error.message || 'Login failed');
     } finally {
       setLoading(false);
     }

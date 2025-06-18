@@ -1,6 +1,6 @@
 // coloniesService.d.ts
-import Colony from "../types/Colony";
-import ColonyReport from "../types/ColonyReport";
+import Colony from "../models/Colony";
+import ColonyReport from "../models/ColonyReport";
 
 export function saveColoniesToServer(colonies: Colony[], userId: string): Promise<Colony[]>;
 export function saveColonyReport(report: ColonyReport): boolean;
@@ -11,7 +11,7 @@ export function getColoniesByIdFromServer(colonyId: string): Promise<Colony>;
 
 // coloniesService.js
 import { getFirestore, collection, addDoc, serverTimestamp, doc, getDocs, updateDoc } from 'firebase/firestore';
-import Colony from '../types/Colony';
+import Colony from '../models/Colony';
 
 export const saveColoniesToServer = async (colonies, userId) => {
     try {

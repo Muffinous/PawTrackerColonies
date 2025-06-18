@@ -1,180 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import './Profile.css';
 import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonLabel, IonRouterLink, IonButtons, IonMenuButton } from '@ionic/react';
-import pawLogo from '../../assets/pawlogo.png';
 import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 // @ts-ignore
-import { getColoniesFromServer, saveColoniesToServer } from '@services/coloniesService';
-import Colony from '../../types/Colony';
-import User from '../../types/User';
+import { saveColoniesToServer } from '@services/coloniesService';
+import Colony from '../../models/Colony';
+import User from '../../models/User';
 
 import { useHistory } from 'react-router-dom';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import ColonyReport from '../../types/ColonyReport';
-import { getDownloadURL, getStorage, ref } from 'firebase/storage';
-import { getUserById } from '../../services/userService';
-import { getColoniesByIdFromServer, getColoniesCats } from '../../services/coloniesService';
+import ColonyReport from '../../models/ColonyReport';
+import { getColoniesByIdFromServer } from '../../services/coloniesService';
 import { getReportByIdFromServer } from '../../services/reportsService';
+import Loading from '../../components/Loading/Loading';
+import { useUser } from '../../components/contexts/UserContextType';
+import ColonyService from '../../services/colony.service';
+import placeholderImage from '../../assets/placeholders/user-placeholder.png';
+import ReportsService from '../../services/report.service';
 
 // Assuming getColoniesFromServer returns an array of numbers
 const Profile: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [userColonies, setUserColonies] = useState<Colony[]>([]);
   const [userReports, setUserReports] = useState<ColonyReport[]>([]);
-  const [userData, setUserData] = useState<{ id: string; data: User } | null>(null);
   const history = useHistory();
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(false); // Added loading state
   const [reportColonies, setReportColoniesData] = useState<Colony[]>(); // State to store cat image URLs
+  const { user } = useUser();
 
   useEffect(() => {
+    console.log("User changed", user?.uid)
+    if (!user?.uid) return;
+
     let isMounted = true;
-    setIsPopupOpen(false);
 
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-
-      // If the user is logged in, fetch and set user data
-      if (user) {
-        const fetchData = async () => {
-          try {
-            const storedUser = sessionStorage.getItem('user');
-
-            if (storedUser) {
-              const parsedUser = JSON.parse(storedUser);
-
-              if (parsedUser && parsedUser.userData && parsedUser.id) {
-                const userData = await getUserById(parsedUser.id);
-
-                const storage = getStorage();
-
-                if (userData.profilePicture !== '') {
-                  try {
-                    const imageRef = ref(storage, userData.profilePicture);
-                    const imageURL = await getDownloadURL(imageRef);
-
-                    // If authenticated, get the download URL with the user's token
-                    userData.profilePicture = imageURL; // Replace the path with the actual URL
-                  } catch (error) {
-                    console.error('Error fetching download URL:', error);
-                    // Handle the error, e.g., display a placeholder image
-                    userData.profilePicture = 'src/assets/placeholders/user-placeholder.png';
-                  }
-                } else {
-                  // If the user is not authenticated, display a placeholder image
-                  userData.profilePicture = 'src/assets/placeholders/user-placeholder.png';
-
-
-                  setUserData({ id: parsedUser.id, data: userData });
-                  const coloniesData = await fetchColonyData(userData.colonies);
-                  const reportsData = await fetchReportData(userData.reports);
-
-                  if (isMounted) {
-                    setUserColonies(coloniesData);
-                    setUserReports(reportsData);
-                    setLoading(false);
-                  }
-                }
-              }
-            }
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-            if (isMounted) {
-              setLoading(false);
-            }
-          }
-        };
-
-        fetchData();
-
-      }
-    });
-
-    // Cleanup the subscription when the component unmounts
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (userData !== null) {
-      // console.log("Final User Data:", userData);
-    }
-    if (userColonies !== null) {
-      console.log("Final User Colonies Data:", userColonies);
-    }
-    if (userReports !== null) {
-      console.log("Final Reports Data:", userReports);
-    }
-  }, [userData, userColonies, userReports]);
-
-  const fetchColonyData = async (colonies: any[]) => {
-    const coloniesData = [];
-
-    for (const colonyId of colonies) {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const colonyData = await getColoniesByIdFromServer(colonyId);
+        const coloniesData = await fetchColonyData(user.uid);
+        const reportsData = await fetchReportData(user.uid);
 
-        colonyData.id = colonyId;
-
-        if (colonyData) {
-          coloniesData.push(colonyData);
+        if (isMounted) {
+          setUserColonies(coloniesData || []);
+          setUserReports(reportsData || []);
         }
-
       } catch (error) {
-        console.error("Error fetching colony data:", error);
+        console.error('Error loading profile:', error);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-    }
-    return coloniesData;
-  };
+    };
 
-  const fetchReportData = async (reports: any[]) => {
-    const reportsData = [];
-    const coloniesData = [];
+    fetchData();
 
-    for (const report of reports) {
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.uid]);
 
-      try {
-        const reportData = await getReportByIdFromServer(report) as ColonyReport;
 
-        if (reportData && reportData.colony) {
-          // reportData.id = report.id;
 
-          // Extract the necessary data from the colony document
-          const colonyData = await getColoniesByIdFromServer(reportData.colony)
+  const fetchColonyData = async (uuid: string) => {
 
-          // Fetch cat data for fed cats
-          // const fedCatsData = await fetchCatData(reportData.catsFed);
-          // reportData.catsFed = fedCatsData;
-
-          // const catsMissingData = await fetchCatData(reportData.catsMissing);
-          // reportData.catsMissing = catsMissingData;
-
-          const userData = await fetchUserData(reportData.user);
-          if (userData !== null) {
-            reportData.user = userData;
-          }
-          reportsData.push(reportData);
-          coloniesData.push(colonyData)
-        }
-        setReportColoniesData(coloniesData)
-
-      } catch (error) {
-        console.error("Error fetching report data:", error);
-      }
-    }
-
-    return reportsData;
-  };
-
-  const fetchUserData = async (userId: any) => {
     try {
-      const userData = await getUserById(userId) as User;
-
-      return userData;
+      const coloniesData = await ColonyService.getColoniesByUserId(uuid);
+      console.log("coloniesData ", JSON.stringify(coloniesData))
+      return coloniesData
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      return null; // Handle the error accordingly in your application
+      console.error("Error fetching colony data:", error);
+    }
+
+  };
+
+  const fetchReportData = async (uuid: string) => {
+    const reportsData = [];
+    try {
+      const reportsData = await ReportsService.getReportsByUserId(uuid);
+      console.log("reportsData ", JSON.stringify(reportsData))
+      return reportsData
+    } catch (error) {
+      console.error("Error fetching reports data:", error);
     }
   };
+
 
   const openPopup = () => {
     setIsPopupOpen(true);
@@ -182,8 +89,8 @@ const Profile: React.FC = () => {
 
   const handleSaveColonies = async (selectedColonies: Colony[]) => {
     // Save the selected colonies to the server
-    console.log("userData ", userData)
-    await saveColoniesToServer(selectedColonies, userData?.id);
+    console.log("userData ", user)
+    await saveColoniesToServer(selectedColonies, user?.uid);
 
     // Update the state to reflect the changes
     setUserColonies(selectedColonies);
@@ -214,18 +121,15 @@ const Profile: React.FC = () => {
       </IonHeader>
       <IonContent className="home-container">
         {loading ? (
-          <div className="loading-container">
-            <h5>Loading <span className="loading-dots"></span></h5>
-            <img src="src/assets/loading/catloading.gif" alt="Loading" />
-          </div>
+          <Loading />
         ) : (
           <div>
             <div className="header">
-              <img src={userData?.data.profilePicture} alt="Cat Logo" className="logo" />
-              <h1>{userData?.data.name} {userData?.data.lastname}</h1>
-              <h6>@{userData?.data.username}</h6>
+              <img src={user?.profilePicture || placeholderImage} alt="Cat Logo" className="logo" />
+              <h1>{user?.name} {user?.lastname}</h1>
+              <h6>@{user?.username}</h6>
             </div>
-            {userData && (
+            {user && (
               <>
                 {/* First IonCard */}
                 <IonCard>
@@ -295,7 +199,7 @@ const Profile: React.FC = () => {
             }
             <div>
             </div>
-            {isPopupOpen && userData && <ColoniesPopup isOpen={isPopupOpen} userId={userData?.id} onClose={() => setIsPopupOpen(false)} onSave={handleSaveColonies} />}
+            {isPopupOpen && user && <ColoniesPopup isOpen={isPopupOpen} userId={user?.uid} onClose={() => setIsPopupOpen(false)} onSave={handleSaveColonies} />}
           </div>
         )}
       </IonContent >

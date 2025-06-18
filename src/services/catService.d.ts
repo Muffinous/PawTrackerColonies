@@ -1,3 +1,3 @@
-import Cat from "../types/Cat";
+import Cat from "../models/Cat";
 
 export function getCatById(catId: string): Promise<Cat>;

@@ -3,12 +3,11 @@ import './Reports.css';
 import { IonContent, IonPage, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonLabel, IonRouterLink, IonHeader, IonTitle, IonToolbar, IonMenuButton } from '@ionic/react';
 import pawLogo from '../../assets/pawlogo.png';
 import { getColoniesByIdFromServer, getColoniesReports } from '../../services/coloniesService';
-import ColonyReport from '../../types/ColonyReport';
+import ColonyReport from '../../models/ColonyReport';
 import { DocumentReference, collection, getDoc, getFirestore } from 'firebase/firestore';
-import Colony from '../../types/Colony';
-import User from '../../types/User';
+import Colony from '../../models/Colony';
+import User from '../../models/User';
 import { getReportsFromServer } from '../../services/reportsService';
-import { getUserById } from '../../services/userService';
 
 const Reports: React.FC = () => {
   const [existingReports, setExistingReports] = useState<ColonyReport[]>([]);
@@ -76,13 +75,13 @@ const Reports: React.FC = () => {
   };
 
   const fetchUserData = async (userId: any) => {
-    try {
+  /*  try {
       const userData = await getUserById(userId) as User;
       return userData;
     } catch (error) {
       console.error("Error fetching user data:", error);
       return null; // Handle the error accordingly in your application
-    }
+    }*/
   };
 
   const openReport = () => {

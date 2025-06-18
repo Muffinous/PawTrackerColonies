@@ -1,3 +1,3 @@
-import User from "../types/User";
+import User from "../models/User";
 
 export function getUserById(userId: string): Promise<User>;

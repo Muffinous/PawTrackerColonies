@@ -6,8 +6,9 @@ import { checkmarkDone, createOutline } from 'ionicons/icons';
 import { getColoniesCats, saveColonyReport } from '../../services/coloniesService';
 import { getStorage } from 'firebase/storage';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import ColonyReport from '../../types/ColonyReport';
+import ColonyReport from '../../models/ColonyReport';
 import { Timestamp } from 'firebase/firestore';
+import { Cat } from '../../models/Cat';
 
 interface CatSwiperProps {
   colonyId: string;

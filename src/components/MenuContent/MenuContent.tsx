@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonButtons, IonMenuButton } from '@ionic/react';
-import User from '../../types/User';
+import User from '../../models/User';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 import './MenuContent.css';
@@ -15,7 +15,9 @@ const MenuContent: React.FC = () => {
         let isMounted = true;
         const auth = getAuth();
 
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      //  const user = await UserService.getUserByUsername(username);
+
+       /* const unsubscribe = onAuthStateChanged(auth, async (user) => {
             const storedUser = sessionStorage.getItem('user');
             if (storedUser) {
                 const parsedUser = JSON.parse(storedUser);
@@ -47,12 +49,12 @@ const MenuContent: React.FC = () => {
                 // Update user data state
                 setUserData({ id: parsedUser.id, data: parsedUser.userData });
             }
-        });
+        }); */
 
         // Cleanup the subscription when the component unmounts
         return () => {
             isMounted = false;
-            unsubscribe();
+          //  unsubscribe();
         };
     }, []);
 

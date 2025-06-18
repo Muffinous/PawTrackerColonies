@@ -7,14 +7,6 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 const auth = getAuth();
 
 // Initialize Firebase (if not already initialized)
-try {
-    const firebaseApp = initializeApp(firebaseConfig);
-    console.log("Firebase initialized", firebaseApp);
-} catch (error) {
-    console.error("Error initializing Firebase:", error);
-}
-
-const firestore = getFirestore();
 
 export const getCatById = async (catId) => {
     console.log("CATS ID ", catId)

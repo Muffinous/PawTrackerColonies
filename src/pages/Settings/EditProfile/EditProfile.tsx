@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import './EditProfile.css';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
-import User from '../../../types/User';
+import User from '../../../models/User';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 const EditProfile: React.FC = () => {

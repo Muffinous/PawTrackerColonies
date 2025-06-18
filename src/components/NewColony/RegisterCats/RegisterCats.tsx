@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './RegisterCats.css'; // Archivo CSS para estilos
 import { IonInput, IonButton, IonContent, IonPage, IonHeader, IonTitle, IonToolbar, IonLoading, IonButtons, IonBackButton, IonSelect, IonSelectOption, IonTextarea } from '@ionic/react';
-import { Cat } from '../../../types/Cat';
+import { Cat } from '../../../models/Cat';
 
 const RegisterCats: React.FC = () => {
     const initialCat: Cat = {

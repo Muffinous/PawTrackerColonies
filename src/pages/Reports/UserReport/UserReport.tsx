@@ -4,16 +4,16 @@ import { IonContent, IonPage, IonCard, IonCardHeader, IonCardTitle, IonCardConte
 import pawLogo from '../../../assets/pawlogo.png';
 import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 
-import ColonyReport from '../../../types/ColonyReport';
+import ColonyReport from '../../../models/ColonyReport';
 import { useHistory, useParams } from 'react-router-dom';
 import { getReportByIdFromServer } from '../../../services/reportsService';
-import Colony from '../../../types/Colony';
-import User from '../../../types/User';
+import Colony from '../../../models/Colony';
+import User from '../../../models/User';
 import { callOutline, close, mailOutline } from 'ionicons/icons';
 import { Auth, getAuth } from 'firebase/auth';
 import { getColoniesByIdFromServer } from '../../../services/coloniesService';
-import { getUserById } from '../../../services/userService';
 import { getCatById } from '../../../services/catService';
+import { Cat } from '../../../models/Cat';
 
 
 const UserReport: React.FC = () => {

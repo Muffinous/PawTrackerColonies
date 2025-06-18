@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import './Home.css';
-import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonLabel } from '@ionic/react';
+import { IonContent, IonPage, IonButton, IonToolbar, IonHeader, IonTitle, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonLabel, IonButtons, IonMenuButton } from '@ionic/react';
 import pawLogo from '../../assets/pawlogo.png';
 import ColoniesPopup from '../../components/ColoniesPopUp/ColoniesPopup';
 // @ts-ignore
 import { saveColoniesToServer } from '@services/coloniesService';
-import Colony from '../../types/Colony';
+import Colony from '../../models/Colony';
 import { useHistory } from 'react-router-dom';
-import User from '../../types/User';
+import User from '../../models/User';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import ColonyReport from '../../types/ColonyReport';
+import ColonyReport from '../../models/ColonyReport';
 import { getColoniesByIdFromServer } from '../../services/coloniesService';
-import { getUserById } from '../../services/userService';
 import { getReportByIdFromServer } from '../../services/reportsService';
+import { Cat } from '../../models/Cat';
+import { UserProvider, useUser } from '../../components/contexts/UserContextType';
+import ColonyService from '../../services/colony.service';
 
 // Assuming getColoniesFromServer returns an array of numbers
 const Home: React.FC = () => {
@@ -21,69 +23,33 @@ const Home: React.FC = () => {
   const [userReports, setUserReports] = useState<ColonyReport[]>([]);
   const history = useHistory();
   const [userData, setUserData] = useState<{ id: string; data: User } | null>(null);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(false); // Added loading state
   const [cats, setCatsInfo] = useState<Cat[]>(/* Initial value */);
+  const { user } = useUser();
+
 
   useEffect(() => {
-    let isMounted = true;
+    const fetchUserColonies = async () => {
 
-    setIsPopupOpen(false);
+      if (!user?.uid) return;
+      setLoading(true);
+      console.log("storeduser ", user)
 
-    const auth = getAuth();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-
-      console.log("user ", user)
-      // If the user is logged in, fetch and set user data
-      if (user) {
-        const fetchData = async () => {
-          try {
-            const storedUser = sessionStorage.getItem('user');
-
-            if (storedUser) {
-              const parsedUser = JSON.parse(storedUser);
-
-              if (parsedUser && parsedUser.userData && parsedUser.id) {
-                const userData = await getUserById(parsedUser.id);
-
-                setUserData({ id: parsedUser.id, data: userData });
-                if (userData.colonies != null) {
-                  const coloniesData = await fetchColonyData(userData.colonies);
-                  const reportsData = await fetchReportData(userData.reports);
-
-                  if (isMounted) {
-                    setUserColonies(coloniesData);
-                    setUserReports(reportsData);
-                    console.log("userRE", reportsData)
-                    setLoading(false);
-                  }
-                }
-              }
-            }
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-            if (isMounted) {
-              setLoading(false);
-            }
-          }
-        };
-        fetchData();
-
+      try {
+        const colonies = await ColonyService.getColoniesByUserId(user.uid);
+        setUserColonies(colonies);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.error("Error fetching user colonies:", error);
+      } finally {
+        setLoading(false);
       }
-    });
+    };
 
-    // Cleanup the subscription when the component unmounts
-    return () => unsubscribe();
-  }, []);
+    fetchUserColonies();
+  }, [user]);
 
-  useEffect(() => {
-    if (userData !== null) {
-      // console.log("Final User Data:", userData);
-    }
-    if (userColonies !== null) {
-      console.log("Final Colonies Data:", userColonies);
-    }
-  }, [userData, userColonies, userReports]);
 
   const fetchReportData = async (reports: any[]) => {
     const reportsData = [];
@@ -156,6 +122,9 @@ const Home: React.FC = () => {
       <IonHeader>
         <IonToolbar color="primary">
           <IonTitle className="app-title">PawTracker (Colonies)</IonTitle>
+          <IonButtons slot="end"> {/* Use slot="end" for placing elements on the right side */}
+            <IonMenuButton /> {/* Menu button */}
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent className="home-container">
