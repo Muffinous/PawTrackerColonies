@@ -1,3 +1,5 @@
+PawTrackerColonies is a platform designed to help animal welfare volunteers and organizations monitor and manage feral cat colonies. It allows users to report feeding activities, track individual cats, view colony data on a map, and store important information securely using a modern frontend and backend architecture.
+
 
 ---
 
