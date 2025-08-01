@@ -2,6 +2,7 @@ package com.pawtracker.controllers;
 
 import com.pawtracker.entities.ColonyReport;
 import com.pawtracker.entities.DTO.ColonyReportDto;
+import com.pawtracker.entities.Requests.ColonyReportRequest;
 import com.pawtracker.services.ColonyReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,6 @@ public class ColonyReportController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public ResponseEntity<ColonyReport> createReport(@RequestBody ColonyReport report) {
-        ColonyReport savedReport = colonyReportService.save(report);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedReport);
-    }
-
    /*@PutMapping("/{id}")
     public ResponseEntity<ColonyReport> updateReport(@PathVariable String id, @RequestBody ColonyReport report) {
         UUID uuid = UUID.fromString(id);
@@ -49,7 +44,39 @@ public class ColonyReportController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ColonyReport>> getAllReports() {
-        return ResponseEntity.ok(colonyReportService.findAll());
+    public ResponseEntity<List<ColonyReportDto>> getAllReports() {
+        return ResponseEntity.ok(colonyReportService.getAllReports());
+    }
+
+    // 2. Reports por user
+    @GetMapping("/by-userId/{uuid}")
+    public ResponseEntity<List<ColonyReportDto>> getReportsByUserId(@PathVariable("uuid") String uuid) {
+        return ResponseEntity.ok(colonyReportService.getReportsByUserId(UUID.fromString(uuid)));
+    }
+/*
+    // 3. Reports por colonia
+    @GetMapping("/colony/{colonyId}")
+    public ResponseEntity<List<ReportDTO>> getReportsByColonyId(@PathVariable UUID colonyId) {
+        return ResponseEntity.ok(reportsService.getReportsByColonyId(colonyId));
+    }
+
+    // 4. Reports por user en colonia
+    @GetMapping("/user/{userId}/colony/{colonyId}")
+    public ResponseEntity<List<ReportDTO>> getReportsByUserAndColony(
+            @PathVariable UUID userId,
+            @PathVariable UUID colonyId
+    ) {
+        return ResponseEntity.ok(reportsService.getReportsByUserAndColony(userId, colonyId));
+    }*/
+
+    @PostMapping
+    public ResponseEntity<?> saveReport(@RequestBody ColonyReportRequest reportRequest) {
+        try {
+            ColonyReport savedReport = colonyReportService.saveReport(reportRequest);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedReport);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error saving report: " + e.getMessage());
+        }
     }
 }

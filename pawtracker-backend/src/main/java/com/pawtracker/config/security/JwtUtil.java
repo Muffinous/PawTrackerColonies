@@ -28,7 +28,7 @@ public class JwtUtil {
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256) // 👈 orden correcto
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 

@@ -1,11 +1,9 @@
 package com.pawtracker.mappers;
 
-import com.pawtracker.entities.Cat;
-import com.pawtracker.entities.Colony;
+import com.pawtracker.entities.*;
 import com.pawtracker.entities.DTO.CatDto;
 import com.pawtracker.entities.DTO.ColonyDto;
 import com.pawtracker.entities.DTO.UserDto;
-import com.pawtracker.entities.User;
 
 import java.util.stream.Collectors;
 
@@ -14,7 +12,6 @@ public class ColonyMapper {
         ColonyDto dto = new ColonyDto();
         dto.setId(colony.getId());
         dto.setName(colony.getName());
-        dto.setLocation(colony.getLocation());
         dto.setLocation(colony.getLocation());
 
         dto.setUsers(colony.getUsers().stream()
@@ -43,7 +40,7 @@ public class ColonyMapper {
         CatDto dto = new CatDto();
         dto.setId(cat.getId());
         dto.setName(cat.getName());
-        // mapear más campos si es necesario
+        // map more fields if needed
         return dto;
     }
 }

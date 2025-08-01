@@ -13,4 +13,5 @@ public class CatReportDto {
     private UUID catId;
     private String description;
     private CatDto cat;
+    private String imageUrl;
 }

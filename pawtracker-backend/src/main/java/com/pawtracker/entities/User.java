@@ -1,12 +1,12 @@
 package com.pawtracker.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -39,8 +39,15 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "colony_id")
     )
-    private List<Colony> colonies;
+    @JsonIgnore
+    private Set<Colony> colonies = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<ColonyReport> reports;
+
+    @Override
+    public String toString() {
+        return "User{id=" + uid + ", username=" + username + "}";
+    }
 }

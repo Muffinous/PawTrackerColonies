@@ -2,18 +2,13 @@ package com.pawtracker.controllers;
 
 import com.pawtracker.entities.Colony;
 import com.pawtracker.entities.DTO.ColonyDto;
-import com.pawtracker.entities.DTO.CreateColonyResponse;
-import com.pawtracker.entities.DTO.UpdateUserColoniesRequest;
+import com.pawtracker.entities.Responses.CreateColonyResponse;
 import com.pawtracker.entities.DTO.UserColonyDto;
-import com.pawtracker.entities.UserColony;
 import com.pawtracker.services.ColonyService;
-import com.pawtracker.services.UserColonyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,6 +37,9 @@ public class ColonyController {
 
     @PostMapping
     public ResponseEntity<CreateColonyResponse> createColony(@RequestBody Colony colony) {
+        System.out.println("Creating colony: " + colony);
+       System.out.println("cats" + colony.getCats());
+
         return new ResponseEntity<>(colonyService.createNewColony(colony), HttpStatus.CREATED);
     }
 

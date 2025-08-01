@@ -8,5 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface CatRepository extends JpaRepository<Cat, UUID> {
-    // Puedes agregar consultas personalizadas aquí si las necesitas
+
 }

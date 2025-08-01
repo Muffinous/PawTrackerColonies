@@ -1,6 +1,6 @@
 package com.pawtracker.controllers;
 
-import com.pawtracker.entities.DTO.UpdateUserColoniesRequest;
+import com.pawtracker.entities.Requests.UpdateUserColoniesRequest;
 import com.pawtracker.services.UserColonyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

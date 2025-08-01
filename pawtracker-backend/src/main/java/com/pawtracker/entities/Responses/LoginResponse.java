@@ -1,4 +1,4 @@
-package com.pawtracker.entities.DTO;
+package com.pawtracker.entities.Responses;
 
 public class LoginResponse {
     private String token;

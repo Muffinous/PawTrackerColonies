@@ -1,10 +1,13 @@
 package com.pawtracker.entities.DTO;
 
 import com.pawtracker.entities.Cat;
+import com.pawtracker.entities.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -18,5 +21,7 @@ public class CatDto {
     private Boolean spayedNeutered;
     private Integer approximateAge;
     private String observations;
-    private Cat.Gender gender; // "M" o "F"
+    private Gender gender;
+    private List<ColonyDto> colonies;
 }
+

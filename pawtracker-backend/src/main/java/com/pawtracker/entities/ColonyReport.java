@@ -1,6 +1,5 @@
 package com.pawtracker.entities;
 
-import com.pawtracker.entities.DTO.CatReportDto;
 import com.pawtracker.entities.DTO.CatReportEntry;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -9,7 +8,6 @@ import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 
@@ -43,4 +41,5 @@ public class ColonyReport {
     private User user;
 
     private LocalDateTime datetime;
+
 }

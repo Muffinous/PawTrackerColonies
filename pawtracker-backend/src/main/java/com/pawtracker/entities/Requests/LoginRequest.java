@@ -1,4 +1,4 @@
-package com.pawtracker.entities.DTO;
+package com.pawtracker.entities.Requests;
 
 import lombok.Data;
 import lombok.Getter;

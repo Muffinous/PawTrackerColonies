@@ -1,5 +1,6 @@
 package com.pawtracker.controllers;
 
+import com.pawtracker.entities.DTO.UserDto;
 import com.pawtracker.entities.User;
 import com.pawtracker.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,9 @@ public class UserController {
     }
 
     @PutMapping("/update/{uid}")
-    public ResponseEntity<User> updateUser(@PathVariable String uid, @RequestBody User user) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable String uid, @RequestBody User user) {
         user.setUid(UUID.fromString(uid));
-        User updatedUser = userService.updateUser(user);
+        UserDto updatedUser = userService.updateUser(user);
         return ResponseEntity.ok(updatedUser);
     }
 

@@ -51,10 +51,7 @@ public class ColonyReportMapper {
         dto.setName(colony.getName());
         dto.setLocation(colony.getLocation());
         dto.setNumberOfCats(colony.getCats().size());
-        dto.setCats(colony.getCats()
-                .stream()
-                .map(this::toCatDto)
-                .collect(Collectors.toList()));
+
         return dto;
     }
 
@@ -75,11 +72,13 @@ public class ColonyReportMapper {
         return entries.stream()
                 .map(e -> {
                     CatReportDto dto = new CatReportDto();
-                    dto.setCatId(e.getCatId());
+                    dto.setCatId(e.getCat().getId());
                     dto.setDescription(e.getDescription());
-                    catRepository.findById(e.getCatId()).ifPresent(cat -> {
+                    catRepository.findById(e.getCat().getId()).ifPresent(cat -> {
                         dto.setCat(toCatDto(cat));
                     });
+                    String baseUrl = "http://localhost:8080/images/";
+                    dto.setImageUrl(baseUrl + dto.getImageUrl());
                     return dto;
                 })
                 .collect(Collectors.toList());

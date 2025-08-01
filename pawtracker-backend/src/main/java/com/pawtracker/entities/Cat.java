@@ -1,11 +1,13 @@
 package com.pawtracker.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -30,14 +32,13 @@ public class Cat {
 
     private Integer approximateAge;
 
-    private Gender gender; // "M" o "F"
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private String observations;
 
     @ManyToMany(mappedBy = "cats")
-    private List<Colony> colonies;
+    @JsonIgnore // Prevent recursion when serializing Cat
+    private Set<Colony> colonies = new HashSet<>();
 
-    public enum Gender {
-        M, F
-    }
 }

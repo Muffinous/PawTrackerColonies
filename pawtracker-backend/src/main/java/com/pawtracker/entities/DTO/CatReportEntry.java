@@ -1,18 +1,21 @@
 package com.pawtracker.entities.DTO;
 
-import jakarta.persistence.Embeddable;
+import com.pawtracker.entities.Cat;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class CatReportEntry {
-    private UUID catId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cat_id")
+    private Cat cat;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
 }
 
