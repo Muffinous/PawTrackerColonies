@@ -1,0 +1,98 @@
+
+
+.cat-card-asssign {
+    width: 50%;
+    height: 50%;
+    border: 1px solid black;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: var(--ion-color-primary);
+    padding: 12px;
+}
+
+.cat-card-asssign img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.cat-card-name {
+    font-weight: bold;
+    text-align: center;
+    color: black;
+}
+
+.cat-card-asssign input[type="checkbox"] {
+    margin-top: 8px;
+}
+
+.cat-card-asssign {
+    width: calc(50% - 8px);
+}
+
+/* CatCard.css */
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  opacity: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.custom-checkbox .checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: #fff;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: var(--ion-color-secondary);
+  border-color: var(--ion-color-secondary);
+}
+
+.custom-checkbox .checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 6px;
+  height: 12px;
+  border: solid #fff;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+
+.cat-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+    margin-top: 12px;
+}

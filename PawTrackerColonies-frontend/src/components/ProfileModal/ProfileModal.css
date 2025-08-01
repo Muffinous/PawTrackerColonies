@@ -1,0 +1,52 @@
+.feeder-contact {
+    display: inline-flex;
+}
+
+.feeder-contact ion-icon {
+    margin-right: 5px;
+}
+
+.feeder-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.feeder-name-section {
+    flex: 1;
+    text-align: left;
+}
+
+.dot-line {
+    font-size: 1.2rem;
+    line-height: 1;
+    margin: 4px 0;
+}
+
+.feeder-name {
+    font-weight: bold;
+    margin: 6px 0;
+}
+
+.feeder-profile {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.feeder-info {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.profile-picture {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--ion-color-primary);
+    margin-left: 2rem;
+}

@@ -1,0 +1,31 @@
+.fed-label {
+    background-color: var(--ion-color-secondary);
+    color: #fff;
+    /* Adjust text color as needed */
+}
+
+.missing-label {
+    background-color: var(--ion-color-tertiary);
+    color: #fff;
+    /* Adjust text color as needed */
+}
+
+/* Add these styles to your CSS/SCSS file */
+.label-container {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    place-content: center;
+    /* Adjust as needed for spacing */
+}
+
+.status-label {
+    padding: 5px;
+    border-radius: 4px;
+    background-color: var(--ion-color-secondary);
+    color: #fff;
+}
+
+.reports-colonies-card, .user-colonies-card {
+    margin: 5px !important;
+}

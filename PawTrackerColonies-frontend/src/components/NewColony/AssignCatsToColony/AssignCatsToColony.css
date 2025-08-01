@@ -1,0 +1,68 @@
+.register-colony-form {
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    /* Centra los elementos horizontalmente */
+    justify-content: flex-start;
+    width: 100%;
+    max-width: 500px;
+    /* Limita el tamaño del formulario */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.register-colony-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* Hace que el contenedor ocupe toda la altura de la pantalla */
+    padding: 0 20px;
+    /* Agrega un poco de espacio a los lados */
+}
+
+.colony-card {
+    border: 1px solid black !important;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 95% !important;
+    box-sizing: border-box;
+
+}
+
+.colony-card h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.cats-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cats-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.cats-list li:last-child {
+    border-bottom: none;
+}
+
+.cat-cards-label {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.cat-cards-asssign {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}

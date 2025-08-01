@@ -1,0 +1,13 @@
+.colonies-popup-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+.save-colonies-button {
+    width: 50%;
+  }
+
+.button-container {
+    text-align: -webkit-center;
+  }

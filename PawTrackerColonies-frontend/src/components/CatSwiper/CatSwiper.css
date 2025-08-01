@@ -1,0 +1,199 @@
+.cat-swiper {
+  position: relative;
+  width: 100%;
+  height: 65vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.save-container {
+  align-items: center;
+  width: 95%;
+  margin: 0 auto;
+  justify-content: space-between;
+}
+
+.cat-swiper-container {
+  margin-top: 10px;
+  border-radius: 20px;
+}
+
+.edit-container {
+  height: 55px;
+  display: flex;
+  align-items: center;
+  width: 70%;
+  padding: 10px;
+  border-radius: 20px;
+  margin: 0 auto;
+  justify-content: space-between;
+  border: 1px solid #ccc;
+  /* Add border style */
+}
+
+.edit-icon {
+  cursor: pointer;
+  background-color: var(--ion-color-primary);
+  /* Use the Ion color variable */
+  border-radius: 50%;
+  /* Make it a circle */
+  padding: 8px;
+  /* Adjust padding for size */
+  display: inline-flex;
+  /* Align icon and text in the same line */
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  /* Add a subtle shadow for depth */
+  transition: transform 0.2s ease-in-out;
+  /* Add a smooth transition effect */
+
+}
+
+.edit-icon ion-icon {
+  color: white;
+  /* Set icon color */
+}
+
+.edit-icon:hover {
+  transform: scale(1.1);
+  /* Scale up on hover for an interactive effect */
+}
+
+.cat-name {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  color: black;
+  background-color: var(--ion-color-secondary);
+  text-align-last: start;
+  padding: 0 10px 0 10px;
+}
+
+.cat-description {
+  flex: 1;
+  padding: 10px;
+  margin: 25px 0 0x 0;
+  width: 95%;
+  font-size: 13px;
+  box-sizing: border-box;
+  height: 60px;
+  white-space: normal;
+  border-radius: 15px;
+}
+
+.swipe-actions {
+  color: black;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.save-report-button {
+  padding: 10px;
+}
+
+.save-report-button button {
+  background-color: var(--ion-color-primary);
+  transition: background-color 0.3s ease-in-out;
+  /* Add a transition for background color */
+}
+
+.save-report-button button:hover {
+  border: 1px solid black;
+  /* Add border style */
+  transform: scale(1.1);
+  /* Scale up on hover for an interactive effect */
+  background-color: var(--ion-color-primary-shade);
+  /* Change the color on hover */
+}
+
+.swipe-actions button {
+  background-color: white;
+}
+
+button {
+  color: black;
+  background-color: white;
+  /* Keep your secondary color */
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.top-buttons {
+  background-color: var(--ion-color-secondary);
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-radius: 10px;
+}
+
+.top-left {
+  order: 1;
+}
+
+.top-right {
+  order: 2;
+}
+
+/** SUMMARY **/
+.summary {
+  text-align: center;
+}
+
+.summary h2 {
+  text-align-last: center !important;
+}
+
+.summary-header {
+  width: 100%;
+  height: 45px;
+  color: black;
+  background-color: var(--ion-color-primary);
+  padding: 0 10px 0 10px;
+  border-radius: 10px;
+}
+
+.summary-title {
+  text-align-last: center;
+  background-color: var(--ion-color-secondary);
+  color: black;
+  border-radius: 10px;
+}
+
+.summary-item {
+  margin: 10px;
+  padding: 15px;
+  background-color: #f2f2f2;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.summary-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.summary-item p {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 18px;
+  color: #333;
+}

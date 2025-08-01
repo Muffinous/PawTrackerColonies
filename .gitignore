@@ -20,13 +20,13 @@ yarn-error.log*
 
 # ---- FRONTEND ----
 # React / Vite / Next
-pawtracker-frontend/node_modules/
-pawtracker-frontend/.next/
-pawtracker-frontend/dist/
-pawtracker-frontend/build/
-pawtracker-frontend/.turbo/
-pawtracker-frontend/.cache/
-pawtracker-frontend/.eslintcache
+PawTrackerColonies-frontend/node_modules/
+PawTrackerColonies-frontend/.next/
+PawTrackerColonies-frontend/dist/
+PawTrackerColonies-frontend/build/
+PawTrackerColonies-frontend/.turbo/
+PawTrackerColonies-frontend/.cache/
+PawTrackerColonies-frontend/.eslintcache
 
 # ---- BACKEND ----
 # If Node.js

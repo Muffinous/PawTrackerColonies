@@ -1,0 +1,65 @@
+/* Register.css */
+.register-colony-form {
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  /* Centra los elementos horizontalmente */
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 500px;
+  /* Limita el tamaño del formulario */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  width: 500px;
+  /* Adjust the width based on your logo size */
+  margin-bottom: 20px;
+  /* Provide space below the logo */
+}
+
+.app-title {
+  color: black;
+}
+
+.input-field {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.register-colony-button {
+  margin-top: 20px;
+  color: #ffffff;
+
+  &:hover {
+    color: black;
+  }
+}
+
+.button-container {
+  text-align: -webkit-center;
+  padding: 20px;
+}
+
+/* NewColony.css */
+.register-colony-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  /* Hace que el contenedor ocupe toda la altura de la pantalla */
+  padding: 0 20px;
+  /* Agrega un poco de espacio a los lados */
+}
+
+.input-field {
+  margin-bottom: 15px;
+  /* Espacio entre los inputs */
+  width: 100%;
+  /* Los inputs ocupan todo el ancho disponible */
+}
