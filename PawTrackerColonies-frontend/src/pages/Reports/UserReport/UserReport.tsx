@@ -12,6 +12,7 @@ import ReportsService from '../../../services/report.service';
 import catPlaceholderImage from '../../../assets/placeholders/cat-placeholder.png';
 import userPlaceholderImage from '../../../assets/placeholders/user-placeholder.png';
 import { getDateValue, getHoursValue } from '../../../services/date.service';
+import ProfileModal from '../../../components/ProfileModal/ProfileModal';
 
 const UserReport: React.FC = () => {
     const [dataReport, setReportData] = useState<ColonyReport | null>(null);
@@ -29,6 +30,8 @@ const UserReport: React.FC = () => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [catImgUrl, setCatImgUrl] = useState<string>(catPlaceholderImage);
     const [openCats, setOpenCats] = useState<{ [catId: string]: boolean }>({});
+    const [showModal, setShowModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<any>(null);
 
 
     useEffect(() => {
@@ -127,6 +130,13 @@ const UserReport: React.FC = () => {
         fetchImages();
     }, [dataReport, apiUrl, user]);
 
+    const handleDayClick = (info: any) => {
+        console.log("Clicked user info:", info);
+        if (info && info.name) {
+            setSelectedUser(info);
+            setShowModal(true);
+        }
+    };
 
     return (
         <IonModal isOpen={true} onDidDismiss={handlePopupClose}>
@@ -205,7 +215,8 @@ const UserReport: React.FC = () => {
                                                     className="profile-picture"
                                                     alt="Profile image"
                                                     src={dataReport.user?.profilePicture || userPlaceholderImage}
-                                                /> 
+                                                    onClick={() => handleDayClick(dataReport.user)}
+                                                />
                                             </div>
                                         </div>
                                     </IonCardContent>
@@ -306,6 +317,11 @@ const UserReport: React.FC = () => {
                     </div>
                 )}
             </IonContent>
+            <ProfileModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                user={selectedUser}
+            />
         </IonModal>
     );
 };

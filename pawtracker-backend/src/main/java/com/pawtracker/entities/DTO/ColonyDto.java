@@ -19,8 +19,6 @@ public class ColonyDto {
     private List<UserDto> users;
     private List<CatDto> cats;
 
-    // otros campos que quieras exponer
-
     public ColonyDto(Colony colony) {
         this.id = colony.getId();
         this.name = colony.getName();
