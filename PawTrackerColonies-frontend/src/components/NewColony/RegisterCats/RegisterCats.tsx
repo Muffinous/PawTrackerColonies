@@ -46,7 +46,7 @@ const RegisterCats: React.FC = () => {
                     coloniesData.map(colony => ({
                         id: colony.id,
                         name: colony.name,
-                        location: colony.location,
+                        location: colony.location.address || '',
                     }))
                 );
                 console.log("colony", coloniesData.map(colony => colony.id));

@@ -64,6 +64,7 @@ const FeedingCalendar: React.FC = () => {
             setShowModal(true);
         }
     };
+    
     const firstWeekDay = (new Date(currentYear, currentMonth, 1).getDay() + 6) % 7;
     const weeks: Date[][] = [];
     let week: Date[] = [];
