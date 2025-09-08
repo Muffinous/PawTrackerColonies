@@ -19,7 +19,7 @@ PawTrackerColonies is a platform designed to help animal welfare volunteers and 
 ### Frontend (`pawtracker-frontend`)
 - **React** with **Ionic Framework**
 - **TypeScript**
-- **Firebase Auth**
+- **Spring Security, JWT**
 - **CSS Modules / SCSS**
 
 ### Backend (`pawtracker-backend`)
